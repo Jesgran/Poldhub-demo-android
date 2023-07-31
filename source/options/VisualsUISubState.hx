@@ -1,29 +1,6 @@
 package options;
 
-#if desktop
-import Discord.DiscordClient;
-#end
-import flash.text.TextField;
 import flixel.FlxG;
-import flixel.FlxSprite;
-import flixel.addons.display.FlxGridOverlay;
-import flixel.group.FlxGroup.FlxTypedGroup;
-import flixel.math.FlxMath;
-import flixel.text.FlxText;
-import flixel.util.FlxColor;
-import lime.utils.Assets;
-import flixel.FlxSubState;
-import flash.text.TextField;
-import flixel.FlxG;
-import flixel.FlxSprite;
-import flixel.util.FlxSave;
-import haxe.Json;
-import flixel.tweens.FlxEase;
-import flixel.tweens.FlxTween;
-import flixel.util.FlxTimer;
-import flixel.input.keyboard.FlxKey;
-import flixel.graphics.FlxGraphic;
-import Controls;
 
 using StringTools;
 
@@ -31,54 +8,54 @@ class VisualsUISubState extends BaseOptionsMenu
 {
 	public function new()
 	{
-		title = 'Visuals e UI';
-		rpcTitle = "Menu' delle Impostazioni delle Visuals e UI"; //for Discord Rich Presence
+		title = 'Visuals and UI';
+		rpcTitle = 'Visuals & UI Settings Menu'; //for Discord Rich Presence
 
-		var option:Option = new Option('SPLASHHH',
-			"Se non spuntato, colpire le note \"Sick!\" non mostrerà lo splash sulle note.",
+		var option:Option = new Option('Note Splashes',
+			"If unchecked, hitting \"Sick!\" notes won't show particles.",
 			'noteSplashes',
 			'bool',
 			true);
 		addOption(option);
 
-		var option:Option = new Option('HUD Nascosto',
-			'Se spuntato, nasconde la maggior parte\ndegli elementi dell\'HUD.',
+		var option:Option = new Option('Hide HUD',
+			'If checked, hides most HUD elements.',
 			'hideHud',
 			'bool',
 			false);
 		addOption(option);
-
+		
 		var option:Option = new Option('Time Bar:',
-			"Che cosa dovrebbe mostrare la Time Bar?",
+			"What should the Time Bar display?",
 			'timeBarType',
 			'string',
-			'Tempo Rimanente',
-			['Tempo Rimanente', 'Tempo Trascorso', 'Nome canzone', 'Disabilitato']);
+			'Time Left',
+			['Time Left', 'Time Elapsed', 'Song Name', 'Disabled']);
 		addOption(option);
 
-		var option:Option = new Option('Luci Lampeggianti',
-			"Non spuntare questo se sei sensibile alle luci lampeggianti!",
+		var option:Option = new Option('Flashing Lights',
+			"Uncheck this if you're sensitive to flashing lights!",
 			'flashing',
 			'bool',
 			true);
 		addOption(option);
 
-		var option:Option = new Option('Zoom Camera',
-			"Se non spuntato, la camera non zoomma ad ogni beat hit.",
+		var option:Option = new Option('Camera Zooms',
+			"If unchecked, the camera won't zoom in on a beat hit.",
 			'camZooms',
 			'bool',
 			true);
 		addOption(option);
 
-		var option:Option = new Option('Zoom della Scritta Punteggio',
-			"Se non spuntato, disabilita lo zoom dello\nScore Text ogni volta che colpisci una nota.",
+		var option:Option = new Option('Score Text Zoom on Hit',
+			"If unchecked, disables the Score text zooming\neverytime you hit a note.",
 			'scoreZoom',
 			'bool',
 			true);
 		addOption(option);
 
-		var option:Option = new Option('Visibilita\' Barra della Vita',
-			'Quanto visibili dovrebbero essere la health bar e le icons.',
+		var option:Option = new Option('Health Bar Transparency',
+			'How much transparent should the health bar and icons be.',
 			'healthBarAlpha',
 			'percent',
 			1);
@@ -88,27 +65,25 @@ class VisualsUISubState extends BaseOptionsMenu
 		option.changeValue = 0.1;
 		option.decimals = 1;
 		addOption(option);
-
-		#if !mobile
-		var option:Option = new Option('Counter degli FPS',
-			'Se non spuntato, nasconde il Counter degli FPS.',
+		
+		var option:Option = new Option('FPS Counter',
+			'If unchecked, hides FPS Counter.',
 			'showFPS',
 			'bool',
-			false);  // Modificato da Nex
+			true);
 		addOption(option);
 		option.onChange = onChangeFPSCounter;
-		#end
-
-		var option:Option = new Option('Canzone di Pausa:',
-			"Che canzone preferisci per il Menu' di Pausa?",
+		
+		var option:Option = new Option('Pause Screen Song:',
+			"What song do you prefer for the Pause Screen?",
 			'pauseMusic',
 			'string',
 			'Tea Time',
-			['Nessuna', 'Breakfast', 'Tea Time']);
+			['None', 'Breakfast', 'Tea Time']);
 		addOption(option);
 		option.onChange = onChangePauseMusic;
-
-		#if CHECK_FOR_UPDATES  // Non serve tradurlo dato che non verrà utilizzato  - Nex
+		
+		#if CHECK_FOR_UPDATES
 		var option:Option = new Option('Check for Updates',
 			'On Release builds, turn this on to check for updates when you start the game.',
 			'checkForUpdates',
@@ -118,7 +93,7 @@ class VisualsUISubState extends BaseOptionsMenu
 		#end
 
 		var option:Option = new Option('Combo Stacking',
-			"Se non spuntato, Valutazioni e Combo non stackeranno, salvandole sulla Memoria di Sistema e rendendole più semplici da leggere",
+			"If unchecked, Ratings and Combo won't stack, saving on System Memory and making them easier to read",
 			'comboStacking',
 			'bool',
 			true);
@@ -130,7 +105,7 @@ class VisualsUISubState extends BaseOptionsMenu
 	var changedMusic:Bool = false;
 	function onChangePauseMusic()
 	{
-		if(ClientPrefs.pauseMusic == 'Nessuna')
+		if(ClientPrefs.pauseMusic == 'None')
 			FlxG.sound.music.volume = 0;
 		else
 			FlxG.sound.playMusic(Paths.music(Paths.formatToSongPath(ClientPrefs.pauseMusic)));
@@ -140,15 +115,13 @@ class VisualsUISubState extends BaseOptionsMenu
 
 	override function destroy()
 	{
-		if(changedMusic) FlxG.sound.playMusic(Paths.music('starRelax'));
+		if(changedMusic) FlxG.sound.playMusic(Paths.music('freakyMenu'));
 		super.destroy();
 	}
 
-	#if !mobile
 	function onChangeFPSCounter()
 	{
 		if(Main.fpsVar != null)
 			Main.fpsVar.visible = ClientPrefs.showFPS;
 	}
-	#end
 }

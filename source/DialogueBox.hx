@@ -2,13 +2,13 @@ package;
 
 import flixel.FlxG;
 import flixel.FlxSprite;
-import flixel.addons.text.FlxTypeText;
-import flixel.graphics.frames.FlxAtlasFrames;
-import flixel.group.FlxSpriteGroup;
-import flixel.input.FlxKeyManager;
 import flixel.text.FlxText;
 import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
+import flixel.input.FlxKeyManager;
+import flixel.group.FlxSpriteGroup;
+import flixel.addons.text.FlxTypeText;
+import flixel.graphics.frames.FlxAtlasFrames;
 
 using StringTools;
 
@@ -178,7 +178,7 @@ class DialogueBox extends FlxSpriteGroup
 			dialogueStarted = true;
 		}
 
-		if(PlayerSettings.player1.controls.ACCEPT)
+		if(Controls.instance.ACCEPT)
 		{
 			if (dialogueEnded)
 			{

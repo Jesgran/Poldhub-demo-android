@@ -1,9 +1,10 @@
 package;
 
-import Section.SwagSection;
 import haxe.Json;
-import haxe.format.JsonParser;
-import lime.utils.Assets;
+
+import openfl.utils.Assets;
+
+import Section;
 
 #if sys
 import sys.io.File;
@@ -42,7 +43,7 @@ class Song
 	public var splashSkin:String;
 	public var speed:Float = 1;
 	public var stage:String;
-	public var player1:String = null;
+	public var player1:String = 'bf';
 	public var player2:String = 'dad';
 	public var gfVersion:String = 'gf';
 
@@ -100,11 +101,8 @@ class Song
 		#end
 
 		if(rawJson == null) {
-			#if sys
-			rawJson = File.getContent(Paths.json(formattedFolder + '/' + formattedSong)).trim();
-			#else
-			rawJson = Assets.getText(Paths.json(formattedFolder + '/' + formattedSong)).trim();
-			#end
+			if (FileSystem.exists(formattedFolder + '/' + formattedSong)) File.getContent(Paths.json(formattedFolder + '/' + formattedSong)).trim();
+			else rawJson = Assets.getText(Paths.json(formattedFolder + '/' + formattedSong)).trim();
 		}
 
 		while (!rawJson.endsWith("}"))

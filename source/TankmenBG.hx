@@ -2,7 +2,6 @@ package;
 
 import flixel.FlxG;
 import flixel.FlxSprite;
-import flixel.graphics.frames.FlxAtlasFrames;
 
 class TankmenBG extends FlxSprite
 {
@@ -25,6 +24,7 @@ class TankmenBG extends FlxSprite
 		animation.addByPrefix('shot', 'John Shot ' + FlxG.random.int(1, 2), 24, false);
 		animation.play('run');
 		animation.curAnim.curFrame = FlxG.random.int(0, animation.curAnim.frames.length - 1);
+		antialiasing = ClientPrefs.globalAntialiasing;
 
 		updateHitbox();
 		setGraphicSize(Std.int(0.8 * width));

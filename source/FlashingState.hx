@@ -2,14 +2,12 @@ package;
 
 import flixel.FlxG;
 import flixel.FlxSprite;
-import flixel.FlxSubState;
 import flixel.text.FlxText;
 import flixel.util.FlxColor;
-import flixel.effects.FlxFlicker;
-import lime.app.Application;
-import flixel.addons.transition.FlxTransitionableState;
-import flixel.tweens.FlxTween;
 import flixel.util.FlxTimer;
+import flixel.tweens.FlxTween;
+import flixel.effects.FlxFlicker;
+import flixel.addons.transition.FlxTransitionableState;
 
 class FlashingState extends MusicBeatState
 {
@@ -24,11 +22,11 @@ class FlashingState extends MusicBeatState
 		add(bg);
 
 		warnText = new FlxText(0, 0, FlxG.width,
-			"Hey, attento!\n
-			Quaesta Mod contiene luci lampeggianti!\n
-			Premi ENTER per disattivarle ora o vai nel menu' delle opzioni.\n
-			Premi ESCAPE per ignorare questo messaggio.\n
-			Sei stato avvisato!",
+			"Hey, watch out!\n
+			This Mod contains some flashing lights!\n
+			You can disable it in Options Menu if you want.\n
+			Press ACCEPT to proceed.\n
+			You've been warned!",
 			32);
 		warnText.setFormat("VCR OSD Mono", 32, FlxColor.WHITE, CENTER);
 		warnText.screenCenter(Y);
@@ -39,27 +37,17 @@ class FlashingState extends MusicBeatState
 	{
 		if(!leftState) {
 			var back:Bool = controls.BACK;
-			if (controls.ACCEPT || back) {
+			var enter:Bool = FlxG.keys.justPressed.ENTER || controls.ACCEPT || FlxG.mouse.justPressed;
+			if (enter) {
 				leftState = true;
 				FlxTransitionableState.skipNextTransIn = true;
 				FlxTransitionableState.skipNextTransOut = true;
-				if(!back) {
-					ClientPrefs.flashing = false;
-					ClientPrefs.saveSettings();
-					FlxG.sound.play(Paths.sound('confirmMenu'));
-					FlxFlicker.flicker(warnText, 1, 0.1, false, true, function(flk:FlxFlicker) {
-						new FlxTimer().start(0.5, function (tmr:FlxTimer) {
-							MusicBeatState.switchState(new TitleState());
-						});
+				FlxG.sound.play(Paths.sound('confirmMenu'));
+				FlxFlicker.flicker(warnText, 1, 0.1, false, true, function(flk:FlxFlicker) {
+					new FlxTimer().start(0.5, function (tmr:FlxTimer) {
+						MusicBeatState.switchState(new TitleState());
 					});
-				} else {
-					FlxG.sound.play(Paths.sound('cancelMenu'));
-					FlxTween.tween(warnText, {alpha: 0}, 1, {
-						onComplete: function (twn:FlxTween) {
-							MusicBeatState.switchState(new TitleState());
-						}
-					});
-				}
+				});
 			}
 		}
 		super.update(elapsed);

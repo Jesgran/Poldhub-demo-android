@@ -1,35 +1,30 @@
 package editors;
 
-#if desktop
-import Discord.DiscordClient;
-#end
+import haxe.Json;
+
+import lime.system.Clipboard;
+
+import openfl.events.Event;
+import openfl.events.IOErrorEvent;
+import openfl.net.FileFilter;
+import openfl.net.FileReference;
+
 import flixel.FlxG;
 import flixel.FlxSprite;
-import flixel.addons.display.FlxGridOverlay;
-import flixel.addons.transition.FlxTransitionableState;
-import flixel.group.FlxGroup.FlxTypedGroup;
-import flixel.math.FlxMath;
-import flixel.text.FlxText;
+import flixel.FlxCamera;
+import flixel.ui.FlxButton;
 import flixel.util.FlxColor;
-import flixel.system.FlxSound;
-import flixel.addons.ui.FlxInputText;
-import flixel.addons.ui.FlxUI9SliceSprite;
+import flixel.text.FlxText;
+import flixel.group.FlxSpriteGroup;
 import flixel.addons.ui.FlxUI;
+import flixel.addons.ui.FlxUITabMenu;
 import flixel.addons.ui.FlxUICheckBox;
 import flixel.addons.ui.FlxUIInputText;
 import flixel.addons.ui.FlxUINumericStepper;
-import flixel.addons.ui.FlxUITabMenu;
-import flixel.ui.FlxButton;
-import openfl.net.FileReference;
-import openfl.events.Event;
-import openfl.events.IOErrorEvent;
-import flash.net.FileFilter;
-import haxe.Json;
-import DialogueBoxPsych;
-import flixel.FlxCamera;
-import flixel.group.FlxSpriteGroup;
-import lime.system.Clipboard;
+
 import Alphabet;
+import DialogueBoxPsych;
+
 #if sys
 import sys.io.File;
 #end
@@ -115,6 +110,7 @@ class DialogueCharacterEditorState extends MusicBeatState
 		box = new FlxSprite(70, 370);
 		box.frames = Paths.getSparrowAtlas('speech_bubble');
 		box.scrollFactor.set();
+		box.antialiasing = ClientPrefs.globalAntialiasing;
 		box.animation.addByPrefix('normal', 'speech bubble normal', 24);
 		box.animation.addByPrefix('center', 'speech bubble middle', 24);
 		box.animation.play('normal', true);
@@ -457,7 +453,7 @@ class DialogueCharacterEditorState extends MusicBeatState
 
 		#if desktop
 		// Updating Discord Rich Presence
-		DiscordClient.changePresence("Editor dei Dialoghi dei Personaggi", "Modificando: " + character.jsonFile.image);
+		Discord.changePresence("Dialogue Character Editor", "Editting: " + character.jsonFile.image);
 		#end
 	}
 

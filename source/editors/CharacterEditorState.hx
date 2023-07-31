@@ -1,38 +1,33 @@
 package editors;
 
-#if desktop
-import Discord.DiscordClient;
-#end
-import animateatlas.AtlasFrameMaker;
+import haxe.Json;
+
+import openfl.events.Event;
+import openfl.events.IOErrorEvent;
+import openfl.net.FileReference;
+
+import lime.system.Clipboard;
+
 import flixel.FlxG;
 import flixel.FlxObject;
 import flixel.FlxSprite;
-import flixel.FlxState;
 import flixel.FlxCamera;
-import flixel.input.keyboard.FlxKey;
-import flixel.addons.display.FlxGridOverlay;
+import flixel.ui.FlxButton;
+import flixel.util.FlxColor;
+import flixel.text.FlxText;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.graphics.FlxGraphic;
-import flixel.text.FlxText;
-import flixel.util.FlxColor;
-import flixel.addons.ui.FlxInputText;
-import flixel.addons.ui.FlxUI9SliceSprite;
+import flixel.animation.FlxAnimation;
 import flixel.addons.ui.FlxUI;
+import flixel.addons.ui.FlxUITabMenu;
 import flixel.addons.ui.FlxUICheckBox;
 import flixel.addons.ui.FlxUIInputText;
 import flixel.addons.ui.FlxUINumericStepper;
-import flixel.addons.ui.FlxUITabMenu;
-import flixel.addons.ui.FlxUITooltip.FlxUITooltipStyle;
-import flixel.ui.FlxButton;
-import flixel.ui.FlxSpriteButton;
-import openfl.net.FileReference;
-import openfl.events.Event;
-import openfl.events.IOErrorEvent;
-import haxe.Json;
+import flixel.system.debug.interaction.tools.Pointer;
+
+import animateatlas.AtlasFrameMaker;
+
 import Character;
-import flixel.system.debug.interaction.tools.Pointer.GraphicCursorCross;
-import lime.system.Clipboard;
-import flixel.animation.FlxAnimation;
 
 #if MODS_ALLOWED
 import sys.FileSystem;
@@ -103,7 +98,6 @@ class CharacterEditorState extends MusicBeatState
 		cameraFollowPointer.setGraphicSize(40, 40);
 		cameraFollowPointer.updateHitbox();
 		cameraFollowPointer.color = FlxColor.WHITE;
-		cameraFollowPointer.antialiasing = false;
 		add(cameraFollowPointer);
 
 		changeBGbutton = new FlxButton(FlxG.width - 360, 25, "", function()
@@ -495,7 +489,6 @@ class CharacterEditorState extends MusicBeatState
 
 	var imageInputText:FlxUIInputText;
 	var healthIconInputText:FlxUIInputText;
-	var gameOverCharInputText:FlxUIInputText;
 
 	var singDurationStepper:FlxUINumericStepper;
 	var scaleStepper:FlxUINumericStepper;
@@ -538,8 +531,6 @@ class CharacterEditorState extends MusicBeatState
 
 		healthIconInputText = new FlxUIInputText(15, imageInputText.y + 35, 75, leHealthIcon.getCharacter(), 8);
 
-		gameOverCharInputText = new FlxUIInputText(healthIconInputText.width + healthIconInputText.x + 15, healthIconInputText.y, 110, char.gameOverChar, 8);
-
 		singDurationStepper = new FlxUINumericStepper(15, healthIconInputText.y + 45, 0.1, 4, 0, 999, 1);
 
 		scaleStepper = new FlxUINumericStepper(15, singDurationStepper.y + 40, 0.1, 1, 0.05, 10, 1);
@@ -580,9 +571,8 @@ class CharacterEditorState extends MusicBeatState
 		healthColorStepperG = new FlxUINumericStepper(singDurationStepper.x + 65, saveCharacterButton.y, 20, char.healthColorArray[1], 0, 255, 0);
 		healthColorStepperB = new FlxUINumericStepper(singDurationStepper.x + 130, saveCharacterButton.y, 20, char.healthColorArray[2], 0, 255, 0);
 
-		tab_group.add(new FlxText(15, imageInputText.y - 18, 0, 'Image file:'));
-		tab_group.add(new FlxText(15, healthIconInputText.y - 18, 0, 'Health icon:'));
-		tab_group.add(new FlxText(gameOverCharInputText.x, gameOverCharInputText.y - 18, 0, 'Game Over character:'));
+		tab_group.add(new FlxText(15, imageInputText.y - 18, 0, 'Image file name:'));
+		tab_group.add(new FlxText(15, healthIconInputText.y - 18, 0, 'Health icon name:'));
 		tab_group.add(new FlxText(15, singDurationStepper.y - 18, 0, 'Sing Animation length:'));
 		tab_group.add(new FlxText(15, scaleStepper.y - 18, 0, 'Scale:'));
 		tab_group.add(new FlxText(positionXStepper.x, positionXStepper.y - 18, 0, 'Character X/Y:'));
@@ -592,7 +582,6 @@ class CharacterEditorState extends MusicBeatState
 		tab_group.add(reloadImage);
 		tab_group.add(decideIconColor);
 		tab_group.add(healthIconInputText);
-		tab_group.add(gameOverCharInputText);
 		tab_group.add(singDurationStepper);
 		tab_group.add(scaleStepper);
 		tab_group.add(flipXCheckBox);
@@ -768,9 +757,6 @@ class CharacterEditorState extends MusicBeatState
 				leHealthIcon.changeIcon(healthIconInputText.text);
 				char.healthIcon = healthIconInputText.text;
 				updatePresence();
-			}
-			else if (sender == gameOverCharInputText) {
-				char.gameOverChar = gameOverCharInputText.text;
 			}
 			else if(sender == imageInputText) {
 				char.imageFile = imageInputText.text;
@@ -991,7 +977,6 @@ class CharacterEditorState extends MusicBeatState
 		if(UI_characterbox != null) {
 			imageInputText.text = char.imageFile;
 			healthIconInputText.text = char.healthIcon;
-			gameOverCharInputText.text = char.gameOverChar;
 			singDurationStepper.value = char.singDuration;
 			scaleStepper.value = char.jsonScale;
 			flipXCheckBox.checked = char.originalFlipX;
@@ -1053,9 +1038,8 @@ class CharacterEditorState extends MusicBeatState
 	function reloadCharacterDropDown() {
 		var charsLoaded:Map<String, Bool> = new Map();
 
-		#if MODS_ALLOWED
-		characterList = [];
-		var directories:Array<String> = [Paths.mods('characters/'), Paths.mods(Paths.currentModDirectory + '/characters/'), Paths.getPreloadPath('characters/')];
+		characterList = CoolUtil.coolTextFile(Paths.txt('characterList'));
+		var directories:Array<String> = [Paths.mods('characters/'), Paths.mods(Paths.currentModDirectory + '/characters/')];
 		for(mod in Paths.getGlobalMods())
 			directories.push(Paths.mods(mod + '/characters/'));
 		for (i in 0...directories.length) {
@@ -1073,9 +1057,6 @@ class CharacterEditorState extends MusicBeatState
 				}
 			}
 		}
-		#else
-		characterList = CoolUtil.coolTextFile(Paths.txt('characterList'));
-		#end
 
 		charDropDown.setData(FlxUIDropDownMenuCustom.makeStrIdLabelArray(characterList, true));
 		charDropDown.selectedLabel = daAnim;
@@ -1091,7 +1072,7 @@ class CharacterEditorState extends MusicBeatState
 	function updatePresence() {
 		#if desktop
 		// Updating Discord Rich Presence
-		DiscordClient.changePresence("Editor dei Personaggi", "Personaggio: " + daAnim, leHealthIcon.getCharacter());
+		Discord.changePresence("Character Editor", "Character: " + daAnim, leHealthIcon.getCharacter());
 		#end
 	}
 
@@ -1109,7 +1090,7 @@ class CharacterEditorState extends MusicBeatState
 			textAnim.text = '';
 		}
 
-		var inputTexts:Array<FlxUIInputText> = [animationInputText, imageInputText, healthIconInputText, gameOverCharInputText, animationNameInputText, animationIndicesInputText];
+		var inputTexts:Array<FlxUIInputText> = [animationInputText, imageInputText, healthIconInputText, animationNameInputText, animationIndicesInputText];
 		for (i in 0...inputTexts.length) {
 			if(inputTexts[i].hasFocus) {
 				FlxG.sound.muteKeys = [];
@@ -1294,8 +1275,7 @@ class CharacterEditorState extends MusicBeatState
 
 			"flip_x": char.originalFlipX,
 			"no_antialiasing": char.noAntialiasing,
-			"healthbar_colors": char.healthColorArray,
-			"death_character": char.gameOverChar
+			"healthbar_colors": char.healthColorArray
 		};
 
 		var data:String = Json.stringify(json, "\t");

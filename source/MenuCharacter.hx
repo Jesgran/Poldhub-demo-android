@@ -1,14 +1,13 @@
 package;
 
+import haxe.Json;
+
 import flixel.FlxSprite;
-import flixel.graphics.frames.FlxAtlasFrames;
+
 #if MODS_ALLOWED
 import sys.io.File;
 import sys.FileSystem;
 #end
-import openfl.utils.Assets;
-import haxe.Json;
-import haxe.format.JsonParser;
 
 typedef MenuCharacterFile = {
 	var image:String;
@@ -37,6 +36,7 @@ class MenuCharacter extends FlxSprite
 		if(character == this.character) return;
 
 		this.character = character;
+		antialiasing = ClientPrefs.globalAntialiasing;
 		visible = true;
 
 		var dontPlayAnim:Bool = false;
@@ -50,26 +50,7 @@ class MenuCharacter extends FlxSprite
 				dontPlayAnim = true;
 			default:
 				var characterPath:String = 'images/menucharacters/' + character + '.json';
-				var rawJson = null;
-
-				#if MODS_ALLOWED
-				var path:String = Paths.modFolders(characterPath);
-				if (!FileSystem.exists(path)) {
-					path = Paths.getPreloadPath(characterPath);
-				}
-
-				if(!FileSystem.exists(path)) {
-					path = Paths.getPreloadPath('images/menucharacters/' + DEFAULT_CHARACTER + '.json');
-				}
-				rawJson = File.getContent(path);
-
-				#else
-				var path:String = Paths.getPreloadPath(characterPath);
-				if(!Assets.exists(path)) {
-					path = Paths.getPreloadPath('images/menucharacters/' + DEFAULT_CHARACTER + '.json');
-				}
-				rawJson = Assets.getText(path);
-				#end
+				var rawJson = Paths.getTextFromFile(characterPath);
 				
 				var charFile:MenuCharacterFile = cast Json.parse(rawJson);
 				frames = Paths.getSparrowAtlas('menucharacters/' + charFile.image);

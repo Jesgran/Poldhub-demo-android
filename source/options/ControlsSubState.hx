@@ -1,28 +1,26 @@
 package options;
 
-#if desktop
-import Discord.DiscordClient;
-#end
-import flash.text.TextField;
+import haxe.Json;
+
+import openfl.text.TextField;
+
+import lime.utils.Assets;
+
 import flixel.FlxG;
 import flixel.FlxSprite;
-import flixel.addons.display.FlxGridOverlay;
-import flixel.group.FlxGroup.FlxTypedGroup;
+import flixel.FlxSubState;
 import flixel.math.FlxMath;
 import flixel.text.FlxText;
-import flixel.util.FlxColor;
-import lime.utils.Assets;
-import flixel.FlxSubState;
-import flash.text.TextField;
-import flixel.FlxG;
-import flixel.FlxSprite;
 import flixel.util.FlxSave;
-import haxe.Json;
+import flixel.util.FlxColor;
+import flixel.util.FlxTimer;
+import flixel.group.FlxGroup;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
-import flixel.util.FlxTimer;
-import flixel.input.keyboard.FlxKey;
 import flixel.graphics.FlxGraphic;
+import flixel.input.keyboard.FlxKey;
+import flixel.addons.display.FlxGridOverlay;
+
 import Controls;
 
 using StringTools;
@@ -31,35 +29,35 @@ class ControlsSubState extends MusicBeatSubstate {
 	private static var curSelected:Int = 1;
 	private static var curAlt:Bool = false;
 
-	private static var defaultKey:String = 'Ripristina Tasti Predefiniti';
+	private static var defaultKey:String = 'Reset to Default Keys';
 	private var bindLength:Int = 0;
 
 	var optionShit:Array<Dynamic> = [
-		['NOTE'],
-		['Sinistra', 'note_left'],
-		['Sotto', 'note_down'],
-		['Sopra', 'note_up'],
-		['Destra', 'note_right'],
+		['NOTES'],
+		['Left', 'note_left'],
+		['Down', 'note_down'],
+		['Up', 'note_up'],
+		['Right', 'note_right'],
 		[''],
-		['INTERFACCIA'],
-		['Sinistra', 'ui_left'],
-		['Sotto', 'ui_down'],
-		['Sopra', 'ui_up'],
-		['Destra', 'ui_right'],
+		['UI'],
+		['Left', 'ui_left'],
+		['Down', 'ui_down'],
+		['Up', 'ui_up'],
+		['Right', 'ui_right'],
 		[''],
 		['Reset', 'reset'],
-		['Accetta', 'accept'],
-		['Indietro', 'back'],
-		['Pausa', 'pause'],
+		['Accept', 'accept'],
+		['Back', 'back'],
+		['Pause', 'pause'],
 		[''],
 		['VOLUME'],
-		['Muto', 'volume_mute'],
-		['Alza', 'volume_up'],
-		['Abbassa', 'volume_down'],
+		['Mute', 'volume_mute'],
+		['Up', 'volume_up'],
+		['Down', 'volume_down'],
 		[''],
 		['DEBUG'],
-		['Tasto 1', 'debug_1'],
-		['Tasto 2', 'debug_2']
+		['Key 1', 'debug_1'],
+		['Key 2', 'debug_2']
 	];
 
 	private var grpOptions:FlxTypedGroup<Alphabet>;
@@ -74,6 +72,7 @@ class ControlsSubState extends MusicBeatSubstate {
 		var bg:FlxSprite = new FlxSprite().loadGraphic(Paths.image('menuDesat'));
 		bg.color = 0xFFea71fd;
 		bg.screenCenter();
+		bg.antialiasing = ClientPrefs.globalAntialiasing;
 		add(bg);
 
 		grpOptions = new FlxTypedGroup<Alphabet>();

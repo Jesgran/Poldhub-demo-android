@@ -1,18 +1,16 @@
 package options;
 
-import flixel.util.FlxStringUtil;
-import flixel.tweens.FlxEase;
-import flixel.tweens.FlxTween;
-import flixel.tweens.FlxEase;
-import flixel.text.FlxText;
-import flixel.group.FlxSpriteGroup;
-import flixel.group.FlxGroup.FlxTypedGroup;
-import flixel.util.FlxColor;
+import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.FlxCamera;
-import flixel.FlxG;
 import flixel.ui.FlxBar;
+import flixel.util.FlxColor;
+import flixel.text.FlxText;
 import flixel.math.FlxPoint;
+import flixel.tweens.FlxTween;
+import flixel.tweens.FlxEase;
+import flixel.group.FlxGroup;
+import flixel.group.FlxSpriteGroup;
 
 using StringTools;
 
@@ -91,7 +89,7 @@ class NoteOffsetState extends MusicBeatState
 		gf.x += gf.positionArray[0];
 		gf.y += gf.positionArray[1];
 		gf.scrollFactor.set(0.95, 0.95);
-		boyfriend = new Character(770, 100, 'poldo-bf', true);
+		boyfriend = new Character(770, 100, 'bf', true);
 		boyfriend.x += boyfriend.positionArray[0];
 		boyfriend.y += boyfriend.positionArray[1];
 		add(gf);
@@ -107,6 +105,7 @@ class NoteOffsetState extends MusicBeatState
 		rating.cameras = [camHUD];
 		rating.setGraphicSize(Std.int(rating.width * 0.7));
 		rating.updateHitbox();
+		rating.antialiasing = ClientPrefs.globalAntialiasing;
 		
 		add(rating);
 
@@ -127,6 +126,7 @@ class NoteOffsetState extends MusicBeatState
 			numScore.cameras = [camHUD];
 			numScore.setGraphicSize(Std.int(numScore.width * 0.5));
 			numScore.updateHitbox();
+			numScore.antialiasing = ClientPrefs.globalAntialiasing;
 			comboNums.add(numScore);
 			daLoop++;
 		}
@@ -354,11 +354,7 @@ class NoteOffsetState extends MusicBeatState
 			persistentUpdate = false;
 			CustomFadeTransition.nextCamera = camOther;
 			MusicBeatState.switchState(new options.OptionsState());
-			if(!options.OptionsState.fromPause) FlxG.sound.playMusic(Paths.music('freakyMenu'), 1, true);
-			else {
-				FlxG.sound.music.pause();
-				PauseSubState.pauseMusic.resume();
-			}
+			FlxG.sound.playMusic(Paths.music('freakyMenu'), 1, true);
 			FlxG.mouse.visible = false;
 		}
 
@@ -444,9 +440,9 @@ class NoteOffsetState extends MusicBeatState
 		{
 			switch(i)
 			{
-				case 0: dumbTexts.members[i].text = 'Offset della Valutazione:';
+				case 0: dumbTexts.members[i].text = 'Rating Offset:';
 				case 1: dumbTexts.members[i].text = '[' + ClientPrefs.comboOffset[0] + ', ' + ClientPrefs.comboOffset[1] + ']';
-				case 2: dumbTexts.members[i].text = 'Offset dei Numeri:';
+				case 2: dumbTexts.members[i].text = 'Numbers Offset:';
 				case 3: dumbTexts.members[i].text = '[' + ClientPrefs.comboOffset[2] + ', ' + ClientPrefs.comboOffset[3] + ']';
 			}
 		}
@@ -455,7 +451,7 @@ class NoteOffsetState extends MusicBeatState
 	function updateNoteDelay()
 	{
 		ClientPrefs.noteOffset = Math.round(barPercent);
-		timeTxt.text = 'Offset Attuale: ' + Math.floor(barPercent) + ' ms';
+		timeTxt.text = 'Current offset: ' + Math.floor(barPercent) + ' ms';
 	}
 
 	function updateMode()
@@ -470,9 +466,9 @@ class NoteOffsetState extends MusicBeatState
 		beatText.visible = !onComboMenu;
 
 		if(onComboMenu)
-			changeModeText.text = '< Combo Offset (Premi Accetta per Cambiare) >';
+			changeModeText.text = '< Combo Offset (Press Accept to Switch) >';
 		else
-			changeModeText.text = '< Note/Beat Delay (Premi Accetta per Cambiare) >';
+			changeModeText.text = '< Note/Beat Delay (Press Accept to Switch) >';
 
 		changeModeText.text = changeModeText.text.toUpperCase();
 		FlxG.mouse.visible = onComboMenu;

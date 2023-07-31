@@ -1,22 +1,22 @@
 package;
 
-import animateatlas.AtlasFrameMaker;
+import haxe.Json;
+
+import openfl.utils.Assets;
+
 import flixel.FlxG;
 import flixel.FlxSprite;
-import flixel.addons.effects.FlxTrail;
-import flixel.animation.FlxBaseAnimation;
-import flixel.graphics.frames.FlxAtlasFrames;
-import flixel.tweens.FlxTween;
 import flixel.util.FlxSort;
-import Section.SwagSection;
+import flixel.tweens.FlxTween;
+
+import animateatlas.AtlasFrameMaker;
+
 #if MODS_ALLOWED
 import sys.io.File;
 import sys.FileSystem;
 #end
-import openfl.utils.AssetType;
-import openfl.utils.Assets;
-import haxe.Json;
-import haxe.format.JsonParser;
+
+import Section;
 
 using StringTools;
 
@@ -33,8 +33,6 @@ typedef CharacterFile = {
 	var flip_x:Bool;
 	var no_antialiasing:Bool;
 	var healthbar_colors:Array<Int>;
-
-	var death_character:Null<String>;
 }
 
 typedef AnimArray = {
@@ -79,10 +77,9 @@ class Character extends FlxSprite
 	public var noAntialiasing:Bool = false;
 	public var originalFlipX:Bool = false;
 	public var healthColorArray:Array<Int> = [255, 0, 0];
-	public var gameOverChar:String = '';
 
-	public static var DEFAULT_CHARACTER:String = 'poldo-bf'; //In case a character is missing, it will use BF on its place
-	public function new(x:Float, y:Float, ?character:String = 'poldo-bf', ?isPlayer:Bool = false)
+	public static var DEFAULT_CHARACTER:String = 'bf'; //In case a character is missing, it will use BF on its place
+	public function new(x:Float, y:Float, ?character:String = 'bf', ?isPlayer:Bool = false)
 	{
 		super(x, y);
 
@@ -93,6 +90,7 @@ class Character extends FlxSprite
 		#end
 		curCharacter = character;
 		this.isPlayer = isPlayer;
+		antialiasing = ClientPrefs.globalAntialiasing;
 		var library:String = null;
 		switch (curCharacter)
 		{
@@ -100,62 +98,28 @@ class Character extends FlxSprite
 
 			default:
 				var characterPath:String = 'characters/' + curCharacter + '.json';
-
-				#if MODS_ALLOWED
-				var path:String = Paths.modFolders(characterPath);
-				if (!FileSystem.exists(path)) {
-					path = Paths.getPreloadPath(characterPath);
-				}
-
-				if (!FileSystem.exists(path))
-				#else
-				var path:String = Paths.getPreloadPath(characterPath);
-				if (!Assets.exists(path))
-				#end
-				{
-					path = Paths.getPreloadPath('characters/' + DEFAULT_CHARACTER + '.json'); //If a character couldn't be found, change him to BF just to prevent a crash
-				}
-
-				#if MODS_ALLOWED
-				var rawJson = File.getContent(path);
-				#else
-				var rawJson = Assets.getText(path);
-				#end
+				var rawJson = Paths.getTextFromFile(characterPath);
 
 				var json:CharacterFile = cast Json.parse(rawJson);
 				var spriteType = "sparrow";
 				//sparrow
 				//packer
 				//texture
-				#if MODS_ALLOWED
 				var modTxtToFind:String = Paths.modsTxt(json.image);
 				var txtToFind:String = Paths.getPath('images/' + json.image + '.txt', TEXT);
 				
 				//var modTextureToFind:String = Paths.modFolders("images/"+json.image);
 				//var textureToFind:String = Paths.getPath('images/' + json.image, new AssetType();
 				
-				if (FileSystem.exists(modTxtToFind) || FileSystem.exists(txtToFind) || Assets.exists(txtToFind))
-				#else
-				if (Assets.exists(Paths.getPath('images/' + json.image + '.txt', TEXT)))
-				#end
-				{
-					spriteType = "packer";
-				}
-				
-				#if MODS_ALLOWED
+				if (FileSystem.exists(modTxtToFind) || FileSystem.exists(txtToFind) || Assets.exists(txtToFind)) spriteType = "packer";
+
 				var modAnimToFind:String = Paths.modFolders('images/' + json.image + '/Animation.json');
 				var animToFind:String = Paths.getPath('images/' + json.image + '/Animation.json', TEXT);
-				
+
 				//var modTextureToFind:String = Paths.modFolders("images/"+json.image);
 				//var textureToFind:String = Paths.getPath('images/' + json.image, new AssetType();
-				
-				if (FileSystem.exists(modAnimToFind) || FileSystem.exists(animToFind) || Assets.exists(animToFind))
-				#else
-				if (Assets.exists(Paths.getPath('images/' + json.image + '/Animation.json', TEXT)))
-				#end
-				{
-					spriteType = "texture";
-				}
+
+				if (#if MODS_ALLOWED FileSystem.exists(modAnimToFind) || FileSystem.exists(animToFind) || #end Assets.exists(animToFind)) spriteType = "texture";
 
 				switch (spriteType){
 					
@@ -190,10 +154,8 @@ class Character extends FlxSprite
 				if(json.healthbar_colors != null && json.healthbar_colors.length > 2)
 					healthColorArray = json.healthbar_colors;
 
-				if (json.death_character != null && json.death_character.length > 0)
-					gameOverChar = json.death_character;
-
-				if(ClientPrefs.globalAntialiasing) antialiasing = !noAntialiasing;
+				antialiasing = !noAntialiasing;
+				if(!ClientPrefs.globalAntialiasing) antialiasing = false;
 
 				animationsArray = json.animations;
 				if(animationsArray != null && animationsArray.length > 0) {
@@ -318,14 +280,13 @@ class Character extends FlxSprite
 	}
 
 	public var danced:Bool = false;
-	public var forceDance:Bool = false;
 
 	/**
 	 * FOR GF DANCING SHIT
 	 */
 	public function dance()
 	{
-		if (forceDance || (!debugMode && !skipDance && !specialAnim))
+		if (!debugMode && !skipDance && !specialAnim)
 		{
 			if(danceIdle)
 			{

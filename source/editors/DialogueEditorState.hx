@@ -1,33 +1,26 @@
 package editors;
 
-#if desktop
-import Discord.DiscordClient;
-#end
+import haxe.Json;
+
+import openfl.events.Event;
+import openfl.events.IOErrorEvent;
+import openfl.net.FileFilter;
+import openfl.net.FileReference;
+
 import flixel.FlxG;
 import flixel.FlxSprite;
-import flixel.addons.display.FlxGridOverlay;
-import flixel.addons.transition.FlxTransitionableState;
-import flixel.group.FlxGroup.FlxTypedGroup;
-import flixel.math.FlxMath;
 import flixel.text.FlxText;
+import flixel.ui.FlxButton;
 import flixel.util.FlxColor;
-import flixel.system.FlxSound;
-import flixel.addons.ui.FlxInputText;
-import flixel.addons.ui.FlxUI9SliceSprite;
 import flixel.addons.ui.FlxUI;
+import flixel.addons.ui.FlxUITabMenu;
 import flixel.addons.ui.FlxUICheckBox;
 import flixel.addons.ui.FlxUIInputText;
 import flixel.addons.ui.FlxUINumericStepper;
-import flixel.addons.ui.FlxUITabMenu;
-import flixel.ui.FlxButton;
-import openfl.net.FileReference;
-import openfl.events.Event;
-import openfl.events.IOErrorEvent;
-import flash.net.FileFilter;
-import haxe.Json;
+
 import DialogueBoxPsych;
-import lime.system.Clipboard;
 import Alphabet;
+
 #if sys
 import sys.io.File;
 #end
@@ -72,6 +65,7 @@ class DialogueEditorState extends MusicBeatState
 		box = new FlxSprite(70, 370);
 		box.frames = Paths.getSparrowAtlas('speech_bubble');
 		box.scrollFactor.set();
+		box.antialiasing = ClientPrefs.globalAntialiasing;
 		box.animation.addByPrefix('normal', 'speech bubble normal', 24);
 		box.animation.addByPrefix('angry', 'AHH speech bubble', 24);
 		box.animation.addByPrefix('center', 'speech bubble middle', 24);
@@ -256,9 +250,9 @@ class DialogueEditorState extends MusicBeatState
 		#if desktop
 		// Updating Discord Rich Presence
 		var rpcText:String = lineInputText.text;
-		if(rpcText == null || rpcText.length < 1) rpcText = '(Vuoto)';
+		if(rpcText == null || rpcText.length < 1) rpcText = '(Empty)';
 		if(rpcText.length < 3) rpcText += '   '; //Fixes a bug on RPC that triggers an error when the text is too short
-		DiscordClient.changePresence("Editor dei Dialoghi", rpcText);
+		Discord.changePresence("Dialogue Editor", rpcText);
 		#end
 	}
 

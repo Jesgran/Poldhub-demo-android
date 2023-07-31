@@ -1,39 +1,19 @@
 package options;
 
-#if desktop
-import Discord.DiscordClient;
-#end
-import flash.text.TextField;
 import flixel.FlxG;
 import flixel.FlxSprite;
-import flixel.addons.display.FlxGridOverlay;
-import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.math.FlxMath;
 import flixel.text.FlxText;
 import flixel.util.FlxColor;
-import lime.utils.Assets;
-import flixel.FlxSubState;
-import flash.text.TextField;
-import flixel.FlxG;
-import flixel.FlxSprite;
-import flixel.util.FlxSave;
-import haxe.Json;
-import flixel.tweens.FlxEase;
-import flixel.tweens.FlxTween;
-import flixel.util.FlxTimer;
-import flixel.input.keyboard.FlxKey;
-import flixel.graphics.FlxGraphic;
-import Controls;
+import flixel.group.FlxGroup;
 
 using StringTools;
 
-class BaseOptionsMenu extends MusicBeatSubstate
+class BaseOptionsMenu extends BaseMenuSubstate<Alphabet>
 {
 	private var curOption:Option = null;
-	private var curSelected:Int = 0;
 	private var optionsArray:Array<Option>;
 
-	private var grpOptions:FlxTypedGroup<Alphabet>;
 	private var checkboxGroup:FlxTypedGroup<CheckboxThingie>;
 	private var grpTexts:FlxTypedGroup<AttachedText>;
 
@@ -48,21 +28,20 @@ class BaseOptionsMenu extends MusicBeatSubstate
 	{
 		super();
 
-		if(title == null) title = 'Opzioni';
-		if(rpcTitle == null) rpcTitle = "Menu delle Opzioni";
+		if(title == null) title = 'Options';
+		if(rpcTitle == null) rpcTitle = 'Options Menu';
 		
 		#if desktop
-		DiscordClient.changePresence(rpcTitle, null);
+		Discord.changePresence(rpcTitle, null);
 		#end
 		
 		var bg:FlxSprite = new FlxSprite().loadGraphic(Paths.image('menuDesat'));
 		bg.color = 0xFFea71fd;
 		bg.screenCenter();
+		bg.antialiasing = ClientPrefs.globalAntialiasing;
 		add(bg);
 
 		// avoids lagspikes while scrolling through menus!
-		grpOptions = new FlxTypedGroup<Alphabet>();
-		add(grpOptions);
 
 		grpTexts = new FlxTypedGroup<AttachedText>();
 		add(grpTexts);
@@ -93,7 +72,7 @@ class BaseOptionsMenu extends MusicBeatSubstate
 			/*optionText.forceX = 300;
 			optionText.yMult = 90;*/
 			optionText.targetY = i;
-			grpOptions.add(optionText);
+			grpMenuItems.add(optionText);
 
 			if(optionsArray[i].type == 'bool') {
 				var checkbox:CheckboxThingie = new CheckboxThingie(optionText.x - 105, optionText.y, optionsArray[i].getValue() == true);
@@ -120,8 +99,8 @@ class BaseOptionsMenu extends MusicBeatSubstate
 			updateTextFrom(optionsArray[i]);
 		}
 
-		changeSelection();
 		reloadCheckboxes();
+		acceptHitbox.addOffset(0, 55);
 	}
 
 	public function addOption(option:Option) {
@@ -129,43 +108,27 @@ class BaseOptionsMenu extends MusicBeatSubstate
 		optionsArray.push(option);
 	}
 
+	override function back() {
+		close();
+		FlxG.sound.play(Paths.sound('cancelMenu'));
+	}
+
+	override function accept() {
+		if (curOption.type == 'bool' && nextAccept <= 0) {
+			FlxG.sound.play(Paths.sound('scrollMenu'));
+			curOption.setValue((curOption.getValue() == true) ? false : true);
+			curOption.change();
+			reloadCheckboxes();
+		}
+	}
+
 	var nextAccept:Int = 5;
-	var holdTime:Float = 0;
 	var holdValue:Float = 0;
 	override function update(elapsed:Float)
 	{
-		if (controls.UI_UP_P)
-		{
-			changeSelection(-1);
-		}
-		if (controls.UI_DOWN_P)
-		{
-			changeSelection(1);
-		}
-
-		if (controls.BACK) {
-			close();
-			FlxG.sound.play(Paths.sound('cancelMenu'));
-		}
-
 		if(nextAccept <= 0)
 		{
-			var usesCheckbox = true;
-			if(curOption.type != 'bool')
-			{
-				usesCheckbox = false;
-			}
-
-			if(usesCheckbox)
-			{
-				if(controls.ACCEPT)
-				{
-					FlxG.sound.play(Paths.sound('scrollMenu'));
-					curOption.setValue((curOption.getValue() == true) ? false : true);
-					curOption.change();
-					reloadCheckboxes();
-				}
-			} else {
+			if (curOption.type != 'bool') {
 				if(controls.UI_LEFT || controls.UI_RIGHT) {
 					var pressed = (controls.UI_LEFT_P || controls.UI_RIGHT_P);
 					if(holdTime > 0.5 || pressed) {
@@ -284,21 +247,16 @@ class BaseOptionsMenu extends MusicBeatSubstate
 		holdTime = 0;
 	}
 	
-	function changeSelection(change:Int = 0)
+	override function changeSelection(change:Int)
 	{
-		curSelected += change;
-		if (curSelected < 0)
-			curSelected = optionsArray.length - 1;
-		if (curSelected >= optionsArray.length)
-			curSelected = 0;
-
+		if (change != 0) FlxG.sound.play(Paths.sound('scrollMenu'), 0.4);
 		descText.text = optionsArray[curSelected].description;
 		descText.screenCenter(Y);
 		descText.y += 270;
 
 		var bullShit:Int = 0;
 
-		for (item in grpOptions.members) {
+		for (item in grpMenuItems.members) {
 			item.targetY = bullShit - curSelected;
 			bullShit++;
 
@@ -323,7 +281,11 @@ class BaseOptionsMenu extends MusicBeatSubstate
 			boyfriend.visible = optionsArray[curSelected].showBoyfriend;
 		}
 		curOption = optionsArray[curSelected]; //shorter lol
-		FlxG.sound.play(Paths.sound('scrollMenu'));
+	}
+
+	function getByID(group:FlxTypedGroup<Dynamic>, id:Int):Dynamic {
+		for (th in group) if (th.ID == id) return th;
+		return null;
 	}
 
 	public function reloadBoyfriend()
@@ -336,7 +298,7 @@ class BaseOptionsMenu extends MusicBeatSubstate
 			boyfriend.destroy();
 		}
 
-		boyfriend = new Character(840, 170, 'poldo-bf', true);
+		boyfriend = new Character(840, 170, 'bf', true);
 		boyfriend.setGraphicSize(Std.int(boyfriend.width * 0.75));
 		boyfriend.updateHitbox();
 		boyfriend.dance();

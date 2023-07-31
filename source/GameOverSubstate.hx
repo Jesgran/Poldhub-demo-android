@@ -2,13 +2,10 @@ package;
 
 import flixel.FlxG;
 import flixel.FlxObject;
-import flixel.FlxSubState;
 import flixel.math.FlxMath;
 import flixel.math.FlxPoint;
 import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
-import flixel.tweens.FlxEase;
-import flixel.tweens.FlxTween;
 
 class GameOverSubstate extends MusicBeatSubstate
 {
@@ -82,7 +79,9 @@ class GameOverSubstate extends MusicBeatSubstate
 			camFollowPos.setPosition(FlxMath.lerp(camFollowPos.x, camFollow.x, lerpVal), FlxMath.lerp(camFollowPos.y, camFollow.y, lerpVal));
 		}
 
-		if (controls.ACCEPT)
+		var enter:Bool = FlxG.keys.justPressed.ENTER || controls.ACCEPT || FlxG.mouse.justPressed;
+
+		if (enter)
 		{
 			endBullshit();
 		}

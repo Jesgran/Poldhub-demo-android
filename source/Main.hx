@@ -1,29 +1,23 @@
 package;
 
-import flixel.graphics.FlxGraphic;
-import flixel.FlxG;
-import flixel.FlxGame;
-import flixel.FlxState;
-import openfl.Assets;
 import openfl.Lib;
+import openfl.events.Event;
 import openfl.display.FPS;
 import openfl.display.Sprite;
-import openfl.events.Event;
 import openfl.display.StageScaleMode;
+
 import lime.app.Application;
 
-#if desktop
-import Discord.DiscordClient;
-#end
+import flixel.FlxG;
+import flixel.FlxGame;
 
 //crash handler stuff
 #if CRASH_HANDLER
-import openfl.events.UncaughtErrorEvent;
-import haxe.CallStack;
 import haxe.io.Path;
-import sys.FileSystem;
+import haxe.CallStack;
+import openfl.events.UncaughtErrorEvent;
 import sys.io.File;
-import sys.io.Process;
+import sys.FileSystem;
 #end
 
 using StringTools;
@@ -36,7 +30,7 @@ class Main extends Sprite
 		initialState: TitleState, // initial game state
 		zoom: -1.0, // game state bounds
 		framerate: 60, // default framerate
-		skipSplash: false, // if the default flixel splash screen should be skipped
+		skipSplash: true, // if the default flixel splash screen should be skipped
 		startFullscreen: false // if the game should start at fullscreen mode
 	};
 
@@ -90,35 +84,28 @@ class Main extends Sprite
 		ClientPrefs.loadDefaultKeys();
 		addChild(new FlxGame(game.width, game.height, game.initialState, #if (flixel < "5.0.0") game.zoom, #end game.framerate, game.framerate, game.skipSplash, game.startFullscreen));
 
-		#if !mobile
 		fpsVar = new FPS(10, 3, 0xFFFFFF);
 		addChild(fpsVar);
 		Lib.current.stage.align = "tl";
 		Lib.current.stage.scaleMode = StageScaleMode.NO_SCALE;
-		#end
+		if(fpsVar != null) {
+			fpsVar.visible = ClientPrefs.showFPS;
+		}
 
-		FlxG.game.focusLostFramerate = 60;
-		FlxG.sound.muteKeys = TitleState.muteKeys;
-		FlxG.sound.volumeDownKeys = TitleState.volumeDownKeys;
-		FlxG.sound.volumeUpKeys = TitleState.volumeUpKeys;
-		FlxG.keys.preventDefaultKeys = [TAB];
-		PlayerSettings.init();
-
-		FlxG.save.bind('funkin' #if (flixel < "5.0.0"), 'ninjamuffin99' #end);
-		ClientPrefs.loadPrefs();
-
+		#if html5
+		FlxG.autoPause = false;
 		FlxG.mouse.visible = false;
-		#if html5 FlxG.autoPause = false; #end
-
+		#end
+		
 		#if CRASH_HANDLER
 		Lib.current.loaderInfo.uncaughtErrorEvents.addEventListener(UncaughtErrorEvent.UNCAUGHT_ERROR, onCrash);
 		#end
 
 		#if desktop
-		if (!DiscordClient.isInitialized) {
-			DiscordClient.initialize();
+		if (!Discord.isInitialized) {
+			Discord.initialize();
 			Application.current.window.onClose.add(function() {
-				DiscordClient.shutdown();
+				Discord.shutdown();
 			});
 		}
 		#end
@@ -160,8 +147,8 @@ class Main extends Sprite
 		Sys.println(errMsg);
 		Sys.println("Crash dump saved in " + Path.normalize(path));
 
-		Application.current.window.alert(errMsg, "Error!");
-		DiscordClient.shutdown();
+		CoolUtil.applicationAlert(errMsg, "Error!");
+		Discord.shutdown();
 		Sys.exit(1);
 	}
 	#end

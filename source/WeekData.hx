@@ -1,13 +1,12 @@
 package;
 
+import openfl.utils.Assets;
+import haxe.Json;
+
 #if MODS_ALLOWED
 import sys.io.File;
 import sys.FileSystem;
 #end
-import lime.utils.Assets;
-import openfl.utils.Assets as OpenFlAssets;
-import haxe.Json;
-import haxe.format.JsonParser;
 
 using StringTools;
 
@@ -51,7 +50,7 @@ class WeekData {
 
 	public static function createWeekFile():WeekFile {
 		var weekFile:WeekFile = {
-			songs: [],
+			songs: [["Bopeebo", "dad", [146, 113, 253]], ["Fresh", "dad", [146, 113, 253]], ["Dad Battle", "dad", [146, 113, 253]]],
 			weekCharacters: ['dad', 'bf', 'gf'],
 			weekBackground: 'stage',
 			weekBefore: 'tutorial',
@@ -159,24 +158,19 @@ class WeekData {
 		#if MODS_ALLOWED
 		for (i in 0...directories.length) {
 			var directory:String = directories[i] + 'weeks/';
-			if(FileSystem.exists(directory)) {
-				var listOfWeeks:Array<String> = CoolUtil.coolTextFile(directory + 'weekList.txt');
-				for (daWeek in listOfWeeks)
-				{
-					var path:String = directory + daWeek + '.json';
-					if(sys.FileSystem.exists(path))
-					{
-						addWeek(daWeek, path, directories[i], i, originalLength);
-					}
-				}
+			var listOfWeeks:Array<String> = CoolUtil.coolTextFile(directory + 'weekList.txt');
+			for (daWeek in listOfWeeks) {
+				var path:String = directory + daWeek + '.json';
+				if(Paths.fileExists(path, TEXT))
+					addWeek(daWeek, path, directories[i], i, originalLength);
+			}
 
+			if (FileSystem.exists(directory)) {
 				for (file in FileSystem.readDirectory(directory))
 				{
 					var path = haxe.io.Path.join([directory, file]);
 					if (!sys.FileSystem.isDirectory(path) && file.endsWith('.json'))
-					{
 						addWeek(file.substr(0, file.length - 5), path, directories[i], i, originalLength);
-					}
 				}
 			}
 		}
@@ -208,15 +202,8 @@ class WeekData {
 
 	private static function getWeekFile(path:String):WeekFile {
 		var rawJson:String = null;
-		#if MODS_ALLOWED
-		if(FileSystem.exists(path)) {
-			rawJson = File.getContent(path);
-		}
-		#else
-		if(OpenFlAssets.exists(path)) {
-			rawJson = Assets.getText(path);
-		}
-		#end
+		if(FileSystem.exists(path)) rawJson = File.getContent(path);
+		else if(Assets.exists(path)) rawJson = Assets.getText(path);
 
 		if(rawJson != null && rawJson.length > 0) {
 			return cast Json.parse(rawJson);

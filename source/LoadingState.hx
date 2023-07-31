@@ -1,20 +1,20 @@
 package;
 
-import lime.app.Promise;
-import lime.app.Future;
-import flixel.FlxG;
-import flixel.FlxState;
-import flixel.FlxSprite;
-import flixel.graphics.frames.FlxAtlasFrames;
-import flixel.util.FlxTimer;
-import flixel.math.FlxMath;
+import haxe.io.Path;
 
 import openfl.utils.Assets;
+
+import lime.app.Future;
+import lime.app.Promise;
 import lime.utils.Assets as LimeAssets;
 import lime.utils.AssetLibrary;
 import lime.utils.AssetManifest;
 
-import haxe.io.Path;
+import flixel.FlxG;
+import flixel.FlxState;
+import flixel.FlxSprite;
+import flixel.math.FlxMath;
+import flixel.util.FlxTimer;
 
 class LoadingState extends MusicBeatState
 {
@@ -49,12 +49,14 @@ class LoadingState extends MusicBeatState
 		funkay = new FlxSprite(0, 0).loadGraphic(Paths.getPath('images/funkay.png', IMAGE));
 		funkay.setGraphicSize(0, FlxG.height);
 		funkay.updateHitbox();
+		funkay.antialiasing = ClientPrefs.globalAntialiasing;
 		add(funkay);
 		funkay.scrollFactor.set();
 		funkay.screenCenter();
 
 		loadBar = new FlxSprite(0, FlxG.height - 20).makeGraphic(FlxG.width, 10, 0xffff16d2);
 		loadBar.screenCenter(X);
+		loadBar.antialiasing = ClientPrefs.globalAntialiasing;
 		add(loadBar);
 		
 		initSongsManifest().onComplete

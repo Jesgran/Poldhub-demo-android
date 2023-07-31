@@ -1,27 +1,23 @@
 package;
 
-import animateatlas.AtlasFrameMaker;
-import flixel.math.FlxPoint;
-import flixel.graphics.frames.FlxFrame.FlxFrameAngle;
-import openfl.geom.Rectangle;
-import flixel.math.FlxRect;
-import haxe.xml.Access;
+import haxe.Json;
+
+import openfl.media.Sound;
 import openfl.system.System;
-import flixel.FlxG;
-import flixel.graphics.frames.FlxAtlasFrames;
 import openfl.utils.AssetType;
 import openfl.utils.Assets as OpenFlAssets;
+import openfl.display.BitmapData;
+
 import lime.utils.Assets;
-import flixel.FlxSprite;
+
+import flixel.FlxG;
+import flixel.graphics.FlxGraphic;
+import flixel.graphics.frames.FlxAtlasFrames;
+
 #if sys
 import sys.io.File;
 import sys.FileSystem;
 #end
-import flixel.graphics.FlxGraphic;
-import openfl.display.BitmapData;
-import haxe.Json;
-
-import flash.media.Sound;
 
 using StringTools;
 
@@ -49,6 +45,37 @@ class Paths
 		'achievements'
 	];
 	#end
+
+	public static function makeModsFolder() {
+		#if MODS_ALLOWED
+		if (FileSystem.exists("mods")) return;
+		FileSystem.createDirectory('mods');
+
+		File.saveContent('mods/readme.txt', 'You can either edit files or add entirely new ones here.\n\nABOUT EDITING:\nIt doesn\'t matter if you want to edit something in assets/shared/images/ or assets/preload/images/,\nyou will have to put the editted files in mods/images/, it will be handled automatically by the engine.');
+
+		var json = {name: "Name", description: "Description", restart: false, runsGlobally: false, color: [170, 0, 255]};
+		File.saveContent('mods/pack.json', Json.stringify(json, '\t'));
+
+		for (folder in ignoreModFolders) if (folder != 'achievements') { // nah shadowmario not did it
+			FileSystem.createDirectory('mods/$folder');
+			File.saveContent('mods/$folder/readme.txt', 'Put your $folder here!');
+		}
+
+		var imagesFolder:Array<String> = [
+			'characters',
+			'dialogue',
+			'icons',
+			'menubackgrounds',
+			'menucharacters',
+			'storymenu'
+		];
+		for (folder in imagesFolder) {
+			FileSystem.createDirectory('mods/images/$folder');
+			File.saveContent('mods/images/$folder/readme.txt', 'Put your $folder images here!');
+		}
+		trace('Successfully created mods directory!');
+		#end
+	}
 
 	public static function excludeAsset(key:String) {
 		if (!dumpExclusions.contains(key))
@@ -240,11 +267,8 @@ class Paths
 		#end
 	}
 
-	inline static public function image(key:String, ?library:String):FlxGraphic
-	{
-		// streamlined the assets process more
-		var returnAsset:FlxGraphic = returnGraphic(key, library);
-		return returnAsset;
+	inline static public function image(key:String, ?library:String):FlxGraphic {
+		return returnGraphic(key, library);
 	}
 
 	static public function getTextFromFile(key:String, ?ignoreMods:Bool = false):String
@@ -367,7 +391,7 @@ class Paths
 			localTrackedAssets.push(path);
 			return currentTrackedAssets.get(path);
 		}
-		trace('oh no its returning null NOOOO');
+		trace('oh no $key returning null NOOOO');
 		return null;
 	}
 
@@ -388,16 +412,12 @@ class Paths
 		gottenPath = gottenPath.substring(gottenPath.indexOf(':') + 1, gottenPath.length);
 		// trace(gottenPath);
 		if(!currentTrackedSounds.exists(gottenPath))
-		#if MODS_ALLOWED
-			currentTrackedSounds.set(gottenPath, Sound.fromFile('./' + gottenPath));
-		#else
 		{
 			var folder:String = '';
 			if(path == 'songs') folder = 'songs:';
 
 			currentTrackedSounds.set(gottenPath, OpenFlAssets.getSound(folder + getPath('$path/$key.$SOUND_EXT', SOUND, library)));
 		}
-		#end
 		localTrackedAssets.push(gottenPath);
 		return currentTrackedSounds.get(gottenPath);
 	}

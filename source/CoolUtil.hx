@@ -1,17 +1,14 @@
 package;
 
-import flixel.util.FlxSave;
-import flixel.FlxG;
+import lime.app.Application;
 import openfl.utils.Assets;
-import lime.utils.Assets as LimeAssets;
-import lime.utils.AssetLibrary;
-import lime.utils.AssetManifest;
-import flixel.system.FlxSound;
+
+import flixel.FlxG;
+import flixel.util.FlxSave;
+
 #if sys
 import sys.io.File;
 import sys.FileSystem;
-#else
-import openfl.utils.Assets;
 #end
 
 using StringTools;
@@ -62,11 +59,8 @@ class CoolUtil
 	public static function coolTextFile(path:String):Array<String>
 	{
 		var daList:Array<String> = [];
-		#if sys
-		if(FileSystem.exists(path)) daList = File.getContent(path).trim().split('\n');
-		#else
-		if(Assets.exists(path)) daList = Assets.getText(path).trim().split('\n');
-		#end
+		if (FileSystem.exists(path)) daList = File.getContent(path).trim().split('\n');
+		else if (Assets.exists(path)) daList = Assets.getText(path).trim().split('\n');
 
 		for (i in 0...daList.length)
 		{
@@ -137,6 +131,13 @@ class CoolUtil
 		Sys.command('/usr/bin/xdg-open', [site]);
 		#else
 		FlxG.openURL(site);
+		#end
+	}
+
+	public static function applicationAlert(description:String, title:String) {
+		Application.current.window.alert(description, title);
+		#if sys
+		Sys.println('$title:\n$description');
 		#end
 	}
 

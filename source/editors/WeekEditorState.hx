@@ -1,37 +1,34 @@
 package editors;
 
-#if desktop
-import Discord.DiscordClient;
-#end
+import haxe.Json;
+
+import openfl.utils.Assets;
+import openfl.events.Event;
+import openfl.events.IOErrorEvent;
+import openfl.net.FileFilter;
+import openfl.net.FileReference;
+
+import lime.system.Clipboard;
+
 import flixel.FlxG;
 import flixel.FlxSprite;
-import flixel.addons.display.FlxGridOverlay;
-import flixel.addons.transition.FlxTransitionableState;
-import flixel.group.FlxGroup.FlxTypedGroup;
-import flixel.math.FlxMath;
 import flixel.text.FlxText;
 import flixel.util.FlxColor;
-import flixel.system.FlxSound;
-import openfl.utils.Assets;
-import flixel.addons.ui.FlxInputText;
-import flixel.addons.ui.FlxUI9SliceSprite;
+import flixel.ui.FlxButton;
+import flixel.group.FlxGroup;
 import flixel.addons.ui.FlxUI;
+import flixel.addons.ui.FlxUITabMenu;
 import flixel.addons.ui.FlxUICheckBox;
 import flixel.addons.ui.FlxUIInputText;
 import flixel.addons.ui.FlxUINumericStepper;
-import flixel.addons.ui.FlxUITabMenu;
-import flixel.ui.FlxButton;
-import openfl.net.FileReference;
-import openfl.events.Event;
-import openfl.events.IOErrorEvent;
-import flash.net.FileFilter;
-import lime.system.Clipboard;
-import haxe.Json;
+import flixel.addons.transition.FlxTransitionableState;
+
+import WeekData;
+
 #if sys
 import sys.io.File;
 import sys.FileSystem;
 #end
-import WeekData;
 
 using StringTools;
 
@@ -62,9 +59,11 @@ class WeekEditorState extends MusicBeatState
 		var ui_tex = Paths.getSparrowAtlas('campaign_menu_UI_assets');
 		var bgYellow:FlxSprite = new FlxSprite(0, 56).makeGraphic(FlxG.width, 386, 0xFFF9CF51);
 		bgSprite = new FlxSprite(0, 56);
+		bgSprite.antialiasing = ClientPrefs.globalAntialiasing;
 
 		weekThing = new MenuItem(0, bgSprite.y + 396, weekFileName);
 		weekThing.y += weekThing.height + 20;
+		weekThing.antialiasing = ClientPrefs.globalAntialiasing;
 		add(weekThing);
 
 		var blackBarThingie:FlxSprite = new FlxSprite().makeGraphic(FlxG.width, 56, FlxColor.BLACK);
@@ -76,6 +75,7 @@ class WeekEditorState extends MusicBeatState
 		lock.frames = ui_tex;
 		lock.animation.addByPrefix('lock', 'lock');
 		lock.animation.play('lock');
+		lock.antialiasing = ClientPrefs.globalAntialiasing;
 		add(lock);
 		
 		missingFileText = new FlxText(0, 0, FlxG.width, "");
@@ -97,6 +97,7 @@ class WeekEditorState extends MusicBeatState
 		add(grpWeekCharacters);
 
 		var tracksSprite:FlxSprite = new FlxSprite(FlxG.width * 0.07, bgSprite.y + 435).loadGraphic(Paths.image('Menu_Tracks'));
+		tracksSprite.antialiasing = ClientPrefs.globalAntialiasing;
 		add(tracksSprite);
 
 		txtTracklist = new FlxText(FlxG.width * 0.05, tracksSprite.y + 60, 0, "", 32);
@@ -363,7 +364,7 @@ class WeekEditorState extends MusicBeatState
 
 		#if desktop
 		// Updating Discord Rich Presence
-		DiscordClient.changePresence("Editor delle Weeks", "Modificando: " + weekFileName);
+		Discord.changePresence("Week Editor", "Editting: " + weekFileName);
 		#end
 	}
 	
@@ -592,6 +593,8 @@ class WeekEditorFreeplayState extends MusicBeatState
 
 	override function create() {
 		bg = new FlxSprite().loadGraphic(Paths.image('menuDesat'));
+		bg.antialiasing = ClientPrefs.globalAntialiasing;
+
 		bg.color = FlxColor.WHITE;
 		add(bg);
 

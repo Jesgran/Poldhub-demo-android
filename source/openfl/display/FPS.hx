@@ -32,7 +32,6 @@ class FPS extends TextField
 	**/
 	public var currentFPS(default, null):Int;
 
-	@:noCompletion private var memPeak:Float;
 	@:noCompletion private var cacheCount:Int;
 	@:noCompletion private var currentTime:Float;
 	@:noCompletion private var times:Array<Float>;
@@ -52,7 +51,6 @@ class FPS extends TextField
 		multiline = true;
 		text = "FPS: ";
 
-		memPeak = 0;
 		cacheCount = 0;
 		currentTime = 0;
 		times = [];
@@ -89,10 +87,7 @@ class FPS extends TextField
 			
 			#if openfl
 			memoryMegas = Math.abs(FlxMath.roundDecimal(System.totalMemory / 1000000, 1));
-			text += "\nMemoria: " + memoryMegas + " MB";
-
-			if (memoryMegas > memPeak) memPeak = memoryMegas;
-			text += "\nPicco Mem: " + memPeak + " MB";
+			text += "\nMemory: " + memoryMegas + " MB";
 			#end
 
 			textColor = 0xFFFFFFFF;

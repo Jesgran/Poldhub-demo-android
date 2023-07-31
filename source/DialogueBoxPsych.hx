@@ -1,23 +1,20 @@
 package;
 
+import haxe.Json;
+
+import openfl.utils.Assets;
+
 import flixel.FlxG;
 import flixel.FlxSprite;
-import flixel.addons.text.FlxTypeText;
-import flixel.graphics.frames.FlxAtlasFrames;
-import flixel.group.FlxSpriteGroup;
-import flixel.input.FlxKeyManager;
-import flixel.text.FlxText;
 import flixel.util.FlxColor;
-import flixel.util.FlxTimer;
-import flixel.FlxSubState;
-import haxe.Json;
-import haxe.format.JsonParser;
-import Alphabet;
+import flixel.group.FlxSpriteGroup;
+
 #if sys
-import sys.FileSystem;
 import sys.io.File;
+import sys.FileSystem;
 #end
-import openfl.utils.Assets;
+
+import Alphabet;
 
 using StringTools;
 
@@ -83,29 +80,13 @@ class DialogueCharacter extends FlxSprite
 		frames = Paths.getSparrowAtlas('dialogue/' + jsonFile.image);
 		reloadAnimations();
 
+		antialiasing = ClientPrefs.globalAntialiasing;
 		if(jsonFile.no_antialiasing == true) antialiasing = false;
 	}
 
 	public function reloadCharacterJson(character:String) {
 		var characterPath:String = 'images/dialogue/' + character + '.json';
-		var rawJson = null;
-
-		#if MODS_ALLOWED
-		var path:String = Paths.modFolders(characterPath);
-		if (!FileSystem.exists(path)) {
-			path = Paths.getPreloadPath(characterPath);
-		}
-
-		if(!FileSystem.exists(path)) {
-			path = Paths.getPreloadPath('images/dialogue/' + DEFAULT_CHARACTER + '.json');
-		}
-		rawJson = File.getContent(path);
-
-		#else
-		var path:String = Paths.getPreloadPath(characterPath);
-		rawJson = Assets.getText(path);
-		#end
-		
+		var rawJson = Paths.getTextFromFile(characterPath);
 		jsonFile = cast Json.parse(rawJson);
 	}
 
@@ -205,6 +186,7 @@ class DialogueBoxPsych extends FlxSpriteGroup
 		box = new FlxSprite(70, 370);
 		box.frames = Paths.getSparrowAtlas('speech_bubble');
 		box.scrollFactor.set();
+		box.antialiasing = ClientPrefs.globalAntialiasing;
 		box.animation.addByPrefix('normal', 'speech bubble normal', 24);
 		box.animation.addByPrefix('normalOpen', 'Speech Bubble Normal Open', 24, false);
 		box.animation.addByPrefix('angry', 'AHH speech bubble', 24);
@@ -301,7 +283,7 @@ class DialogueBoxPsych extends FlxSpriteGroup
 			bgFade.alpha += 0.5 * elapsed;
 			if(bgFade.alpha > 0.5) bgFade.alpha = 0.5;
 
-			if(PlayerSettings.player1.controls.ACCEPT) {
+			if(Controls.instance.ACCEPT) {
 				if(!daText.finishedText) {
 					daText.finishText();
 					if(skipDialogueThing != null) {
@@ -514,10 +496,7 @@ class DialogueBoxPsych extends FlxSpriteGroup
 
 	public static function parseDialogue(path:String):DialogueFile {
 		#if MODS_ALLOWED
-		if(FileSystem.exists(path))
-		{
-			return cast Json.parse(File.getContent(path));
-		}
+		if(FileSystem.exists(path)) return cast Json.parse(File.getContent(path));
 		#end
 		return cast Json.parse(Assets.getText(path));
 	}

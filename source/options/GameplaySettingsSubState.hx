@@ -1,29 +1,6 @@
 package options;
 
-#if desktop
-import Discord.DiscordClient;
-#end
-import flash.text.TextField;
 import flixel.FlxG;
-import flixel.FlxSprite;
-import flixel.addons.display.FlxGridOverlay;
-import flixel.group.FlxGroup.FlxTypedGroup;
-import flixel.math.FlxMath;
-import flixel.text.FlxText;
-import flixel.util.FlxColor;
-import lime.utils.Assets;
-import flixel.FlxSubState;
-import flash.text.TextField;
-import flixel.FlxG;
-import flixel.FlxSprite;
-import flixel.util.FlxSave;
-import haxe.Json;
-import flixel.tweens.FlxEase;
-import flixel.tweens.FlxTween;
-import flixel.util.FlxTimer;
-import flixel.input.keyboard.FlxKey;
-import flixel.graphics.FlxGraphic;
-import Controls;
 
 using StringTools;
 
@@ -31,11 +8,11 @@ class GameplaySettingsSubState extends BaseOptionsMenu
 {
 	public function new()
 	{
-		title = 'Impostazioni del Gameplay';
-		rpcTitle = "Menu' delle Impostazioni del Gameplay"; //for Discord Rich Presence
+		title = 'Gameplay Settings';
+		rpcTitle = 'Gameplay Settings Menu'; //for Discord Rich Presence
 
-		var option:Option = new Option('Modalita\' Controller',
-			'Spunta questo se vuoi giocare\ncon un controller invece di usare la\ntua tastiera.',
+		var option:Option = new Option('Controller Mode',
+			'Check this if you want to play with\na controller instead of using your Keyboard.',
 			'controllerMode',
 			'bool',
 			false);
@@ -43,54 +20,42 @@ class GameplaySettingsSubState extends BaseOptionsMenu
 
 		//I'd suggest using "Downscroll" as an example for making your own option since it is the simplest here
 		var option:Option = new Option('Downscroll', //Name
-			'Se spuntato, le note andranno giù invece che sopra, abbastanza semplice.', //Description
+			'If checked, notes go Down instead of Up, simple enough.', //Description
 			'downScroll', //Save data variable name
 			'bool', //Variable type
 			false); //Default value
 		addOption(option);
 
 		var option:Option = new Option('Middlescroll',
-			'Se spuntato, le tue note vengono centrate.',
+			'If checked, your notes get centered.',
 			'middleScroll',
 			'bool',
 			false);
 		addOption(option);
 
-		var option:Option = new Option('Note Avversarie',
-			'Se non spuntato, le note dell\'avversario vengono nascoste.',
+		var option:Option = new Option('Opponent Notes',
+			'If unchecked, opponent notes get hidden.',
 			'opponentStrums',
 			'bool',
 			true);
 		addOption(option);
 
-		var option:Option = new Option('Visibilita\' Background Note',
-			'Quanto visibile dovrebbe essere il background delle note.\nEssendo scuro, può essere usato per una maggiore visibilità\ndelle note.',
-			'scrollUnderlay',
-			'percent',
-			0);
-		option.scrollSpeed = 1.6;
-		option.minValue = 0.0;
-		option.maxValue = 1;
-		option.changeValue = 0.1;
-		option.decimals = 1;
-		addOption(option);
-
 		var option:Option = new Option('Ghost Tapping',
-			"Se spuntato, non riceverai misses premendo comandi\nquando non ci stanno note da colpire.",
+			"If checked, you won't get misses from pressing keys\nwhile there are no notes able to be hit.",
 			'ghostTapping',
 			'bool',
 			true);
 		addOption(option);
 
-		var option:Option = new Option('Disattiva il Pulsante Reset',
-			"Se spuntato, premere Reset non fara' niente.",
+		var option:Option = new Option('Disable Reset Button',
+			"If checked, pressing Reset won't do anything.",
 			'noReset',
 			'bool',
 			false);
 		addOption(option);
 
-		var option:Option = new Option('Volume della Hitsound',
-			'Le note burla fanno \"Tick!\" quando le colpisci.',
+		var option:Option = new Option('Hitsound Volume',
+			'Funny notes does \"Tick!\" when you hit them."',
 			'hitsoundVolume',
 			'percent',
 			0);
@@ -102,8 +67,8 @@ class GameplaySettingsSubState extends BaseOptionsMenu
 		option.decimals = 1;
 		option.onChange = onChangeHitsoundVolume;
 
-		var option:Option = new Option('Valutazione Offset',
-			'Cambia con quanto ritardo/anticipo devi colpire per un "Sick!"\nPiù alto il valore è, più tardi devi colpire.',
+		var option:Option = new Option('Rating Offset',
+			'Changes how late/early you have to hit for a "Sick!"\nHigher values mean you have to hit later.',
 			'ratingOffset',
 			'int',
 			0);
@@ -113,8 +78,8 @@ class GameplaySettingsSubState extends BaseOptionsMenu
 		option.maxValue = 30;
 		addOption(option);
 
-		var option:Option = new Option('Finestra di colpi "Sick!"',
-			'Cambia la quantità di tempo che hai\nper colpire un "Sick!" in millisecondi.',
+		var option:Option = new Option('Sick! Hit Window',
+			'Changes the amount of time you have\nfor hitting a "Sick!" in milliseconds.',
 			'sickWindow',
 			'int',
 			45);
@@ -124,8 +89,8 @@ class GameplaySettingsSubState extends BaseOptionsMenu
 		option.maxValue = 45;
 		addOption(option);
 
-		var option:Option = new Option('Finestra di colpi "Good"',
-			'Cambia la quantità di tempo che hai\nper colpire un "Good!" in millisecondi.',
+		var option:Option = new Option('Good Hit Window',
+			'Changes the amount of time you have\nfor hitting a "Good" in milliseconds.',
 			'goodWindow',
 			'int',
 			90);
@@ -135,8 +100,8 @@ class GameplaySettingsSubState extends BaseOptionsMenu
 		option.maxValue = 90;
 		addOption(option);
 
-		var option:Option = new Option('Finestra di colpi "Bad"',
-			'Cambia la quantità di tempo che hai\nper colpire un "Bad!" in millisecondi.',
+		var option:Option = new Option('Bad Hit Window',
+			'Changes the amount of time you have\nfor hitting a "Bad" in milliseconds.',
 			'badWindow',
 			'int',
 			135);
@@ -146,8 +111,8 @@ class GameplaySettingsSubState extends BaseOptionsMenu
 		option.maxValue = 135;
 		addOption(option);
 
-		var option:Option = new Option('Frame Sicuri',
-			'Cambia quanti frame extra hai per\ncolpire una nota prima che faccia miss.',
+		var option:Option = new Option('Safe Frames',
+			'Changes how many frames you have for\nhitting a note earlier or late.',
 			'safeFrames',
 			'float',
 			10);
@@ -160,8 +125,11 @@ class GameplaySettingsSubState extends BaseOptionsMenu
 		super();
 	}
 
+	var lastHitsoundVolume:Float = 0;
 	function onChangeHitsoundVolume()
 	{
-		FlxG.sound.play(Paths.sound('hitsound'), ClientPrefs.hitsoundVolume);
+		if (lastHitsoundVolume != ClientPrefs.hitsoundVolume)
+			FlxG.sound.play(Paths.sound('hitsound'), ClientPrefs.hitsoundVolume);
+		lastHitsoundVolume = ClientPrefs.hitsoundVolume;
 	}
 }

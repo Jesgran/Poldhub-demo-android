@@ -1,24 +1,22 @@
 package editors;
 
-import Section.SwagSection;
-import Song.SwagSong;
-import flixel.group.FlxGroup.FlxTypedGroup;
-import flixel.addons.transition.FlxTransitionableState;
-import flixel.util.FlxColor;
-import flixel.FlxSprite;
+import openfl.events.KeyboardEvent;
+
 import flixel.FlxG;
-import flixel.text.FlxText;
-import flixel.tweens.FlxEase;
-import flixel.tweens.FlxTween;
-import flixel.math.FlxMath;
-import flixel.math.FlxPoint;
-import flixel.math.FlxRect;
-import flixel.system.FlxSound;
+import flixel.FlxSprite;
 import flixel.util.FlxSort;
 import flixel.util.FlxTimer;
+import flixel.util.FlxColor;
+import flixel.group.FlxGroup;
+import flixel.tweens.FlxEase;
+import flixel.tweens.FlxTween;
+import flixel.text.FlxText;
+import flixel.math.FlxMath;
+import flixel.math.FlxRect;
+import flixel.sound.FlxSound;
 import flixel.input.keyboard.FlxKey;
-import openfl.events.KeyboardEvent;
-import FunkinLua;
+
+import Section;
 
 using StringTools;
 
@@ -89,6 +87,7 @@ class EditorPlayState extends MusicBeatState
 		strumLineNotes = new FlxTypedGroup<StrumNote>();
 		opponentStrums = new FlxTypedGroup<StrumNote>();
 		playerStrums = new FlxTypedGroup<StrumNote>();
+		add(strumLineNotes);
 
 		generateStaticArrows(0);
 		generateStaticArrows(1);
@@ -100,7 +99,6 @@ class EditorPlayState extends MusicBeatState
 		
 		grpNoteSplashes = new FlxTypedGroup<NoteSplash>();
 		add(grpNoteSplashes);
-		add(strumLineNotes);
 
 		var splash:NoteSplash = new NoteSplash(100, 100, 0);
 		grpNoteSplashes.add(splash);
@@ -171,8 +169,11 @@ class EditorPlayState extends MusicBeatState
 	function sayGo() {
 		var go:FlxSprite = new FlxSprite().loadGraphic(Paths.image('go'));
 		go.scrollFactor.set();
+
 		go.updateHitbox();
+
 		go.screenCenter();
+		go.antialiasing = ClientPrefs.globalAntialiasing;
 		add(go);
 		FlxTween.tween(go, {y: go.y += 100, alpha: 0}, Conductor.crochet / 1000, {
 			ease: FlxEase.cubeInOut,
@@ -837,7 +838,6 @@ class EditorPlayState extends MusicBeatState
 
 		if (PlayState.isPixelStage)
 		{
-			rating.antialiasing = false;
 			pixelShitPart1 = 'pixelUI/';
 			pixelShitPart2 = '-pixel';
 		}
@@ -868,7 +868,9 @@ class EditorPlayState extends MusicBeatState
 		if (!PlayState.isPixelStage)
 		{
 			rating.setGraphicSize(Std.int(rating.width * 0.7));
+			rating.antialiasing = ClientPrefs.globalAntialiasing;
 			comboSpr.setGraphicSize(Std.int(comboSpr.width * 0.7));
+			comboSpr.antialiasing = ClientPrefs.globalAntialiasing;
 		}
 		else
 		{
@@ -899,9 +901,13 @@ class EditorPlayState extends MusicBeatState
 			numScore.x += ClientPrefs.comboOffset[2];
 			numScore.y -= ClientPrefs.comboOffset[3];
 
-			if (!PlayState.isPixelStage) numScore.setGraphicSize(Std.int(numScore.width * 0.5));
-			else {
-				numScore.antialiasing = false;
+			if (!PlayState.isPixelStage)
+			{
+				numScore.antialiasing = ClientPrefs.globalAntialiasing;
+				numScore.setGraphicSize(Std.int(numScore.width * 0.5));
+			}
+			else
+			{
 				numScore.setGraphicSize(Std.int(numScore.width * PlayState.daPixelZoom));
 			}
 			numScore.updateHitbox();

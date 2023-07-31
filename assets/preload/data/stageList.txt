@@ -1,4 +1,9 @@
 stage
-cucinaciccio
-xiuderone
-jenshin
+spooky
+philly
+limo
+mall
+mallEvil
+school
+schoolEvil
+tank

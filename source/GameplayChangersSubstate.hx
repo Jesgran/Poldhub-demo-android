@@ -1,45 +1,27 @@
 package;
 
-import flash.text.TextField;
 import flixel.FlxG;
 import flixel.FlxSprite;
-import flixel.addons.display.FlxGridOverlay;
-import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.math.FlxMath;
-import flixel.text.FlxText;
 import flixel.util.FlxColor;
-import lime.utils.Assets;
-import flixel.FlxSubState;
-import flash.text.TextField;
-import flixel.FlxG;
-import flixel.FlxSprite;
-import flixel.util.FlxSave;
-import haxe.Json;
-import flixel.tweens.FlxEase;
-import flixel.tweens.FlxTween;
-import flixel.util.FlxTimer;
-import flixel.input.keyboard.FlxKey;
-import flixel.graphics.FlxGraphic;
-import Controls;
+import flixel.group.FlxGroup;
 
 using StringTools;
 
-class GameplayChangersSubstate extends MusicBeatSubstate
+class GameplayChangersSubstate extends BaseMenuSubstate<Alphabet>
 {
 	private var curOption:GameplayOption = null;
-	private var curSelected:Int = 0;
 	private var optionsArray:Array<Dynamic> = [];
 
-	private var grpOptions:FlxTypedGroup<Alphabet>;
 	private var checkboxGroup:FlxTypedGroup<CheckboxThingie>;
 	private var grpTexts:FlxTypedGroup<AttachedText>;
 
 	function getOptions()
 	{
-		var goption:GameplayOption = new GameplayOption('Tipo Scroll', 'scrolltype', 'string', 'multiplicative', ["multiplicative", "constant"]);
+		var goption:GameplayOption = new GameplayOption('Scroll Type', 'scrolltype', 'string', 'multiplicative', ["multiplicative", "constant"]);
 		optionsArray.push(goption);
 
-		var option:GameplayOption = new GameplayOption('Velocita\' scroll', 'scrollspeed', 'float', 1);
+		var option:GameplayOption = new GameplayOption('Scroll Speed', 'scrollspeed', 'float', 1);
 		option.scrollSpeed = 2.0;
 		option.minValue = 0.35;
 		option.changeValue = 0.05;
@@ -67,7 +49,7 @@ class GameplayChangersSubstate extends MusicBeatSubstate
 		optionsArray.push(option);
 		#end
 
-		var option:GameplayOption = new GameplayOption('Moltipl Guadagno HP', 'healthgain', 'float', 1);
+		var option:GameplayOption = new GameplayOption('Health Gain Multiplier', 'healthgain', 'float', 1);
 		option.scrollSpeed = 2.5;
 		option.minValue = 0;
 		option.maxValue = 5;
@@ -75,7 +57,7 @@ class GameplayChangersSubstate extends MusicBeatSubstate
 		option.displayFormat = '%vX';
 		optionsArray.push(option);
 
-		var option:GameplayOption = new GameplayOption('Moltipl Perdita HP', 'healthloss', 'float', 1);
+		var option:GameplayOption = new GameplayOption('Health Loss Multiplier', 'healthloss', 'float', 1);
 		option.scrollSpeed = 2.5;
 		option.minValue = 0.5;
 		option.maxValue = 5;
@@ -83,10 +65,10 @@ class GameplayChangersSubstate extends MusicBeatSubstate
 		option.displayFormat = '%vX';
 		optionsArray.push(option);
 
-		var option:GameplayOption = new GameplayOption('Instakill se Miss', 'instakill', 'bool', false);
+		var option:GameplayOption = new GameplayOption('Instakill on Miss', 'instakill', 'bool', false);
 		optionsArray.push(option);
 
-		var option:GameplayOption = new GameplayOption('Modalita\' Pratica', 'practice', 'bool', false);
+		var option:GameplayOption = new GameplayOption('Practice Mode', 'practice', 'bool', false);
 		optionsArray.push(option);
 
 		var option:GameplayOption = new GameplayOption('Botplay', 'botplay', 'bool', false);
@@ -107,14 +89,10 @@ class GameplayChangersSubstate extends MusicBeatSubstate
 	public function new()
 	{
 		super();
-		
+
 		var bg:FlxSprite = new FlxSprite().makeGraphic(FlxG.width, FlxG.height, FlxColor.BLACK);
 		bg.alpha = 0.6;
 		add(bg);
-
-		// avoids lagspikes while scrolling through menus!
-		grpOptions = new FlxTypedGroup<Alphabet>();
-		add(grpOptions);
 
 		grpTexts = new FlxTypedGroup<AttachedText>();
 		add(grpTexts);
@@ -131,7 +109,7 @@ class GameplayChangersSubstate extends MusicBeatSubstate
 			optionText.scaleX = 0.8;
 			optionText.scaleY = 0.8;
 			optionText.targetY = i;
-			grpOptions.add(optionText);
+			grpMenuItems.add(optionText);
 
 			if(optionsArray[i].type == 'bool') {
 				optionText.x += 110;
@@ -155,48 +133,32 @@ class GameplayChangersSubstate extends MusicBeatSubstate
 			updateTextFrom(optionsArray[i]);
 		}
 
-		changeSelection();
 		reloadCheckboxes();
+		acceptHitbox.addOffset(-40, -73);
+	}
+
+	override function accept() {
+		if (nextAccept <= 0 && curOption.type == 'bool') {
+			FlxG.sound.play(Paths.sound('scrollMenu'));
+			curOption.setValue((curOption.getValue() == true) ? false : true);
+			curOption.change();
+			reloadCheckboxes();
+		}
+	}
+
+	override function back() {
+		close();
+		ClientPrefs.saveSettings();
+		FlxG.sound.play(Paths.sound('cancelMenu'));
 	}
 
 	var nextAccept:Int = 5;
-	var holdTime:Float = 0;
 	var holdValue:Float = 0;
 	override function update(elapsed:Float)
 	{
-		if (controls.UI_UP_P)
-		{
-			changeSelection(-1);
-		}
-		if (controls.UI_DOWN_P)
-		{
-			changeSelection(1);
-		}
-
-		if (controls.BACK) {
-			close();
-			ClientPrefs.saveSettings();
-			FlxG.sound.play(Paths.sound('cancelMenu'));
-		}
-
 		if(nextAccept <= 0)
 		{
-			var usesCheckbox = true;
-			if(curOption.type != 'bool')
-			{
-				usesCheckbox = false;
-			}
-
-			if(usesCheckbox)
-			{
-				if(controls.ACCEPT)
-				{
-					FlxG.sound.play(Paths.sound('scrollMenu'));
-					curOption.setValue((curOption.getValue() == true) ? false : true);
-					curOption.change();
-					reloadCheckboxes();
-				}
-			} else {
+			if (curOption.type != 'bool') {
 				if(controls.UI_LEFT || controls.UI_RIGHT) {
 					var pressed = (controls.UI_LEFT_P || controls.UI_RIGHT_P);
 					if(holdTime > 0.5 || pressed) {
@@ -238,9 +200,9 @@ class GameplayChangersSubstate extends MusicBeatSubstate
 									curOption.curOption = num;
 									curOption.setValue(curOption.options[num]); //lol
 									
-									if (curOption.name == "Tipo Scroll")
+									if (curOption.name == "Scroll Type")
 									{
-										var oOption:GameplayOption = getOptionByName("Velocita\' scroll");
+										var oOption:GameplayOption = getOptionByName("Scroll Speed");
 										if (oOption != null)
 										{
 											if (curOption.getValue() == "constant")
@@ -302,7 +264,7 @@ class GameplayChangersSubstate extends MusicBeatSubstate
 						updateTextFrom(leOption);
 					}
 
-					if(leOption.name == 'Velocita\' scroll')
+					if(leOption.name == 'Scroll Speed')
 					{
 						leOption.displayFormat = "%vX";
 						leOption.maxValue = 3;
@@ -330,7 +292,7 @@ class GameplayChangersSubstate extends MusicBeatSubstate
 		var val:Dynamic = option.getValue();
 		if(option.type == 'percent') val *= 100;
 		var def:Dynamic = option.defaultValue;
-		option.text = text.replace('%v', val).replace('%d', def).replace('multiplicative', 'moltiplicativo').replace('constant', 'costante');
+		option.text = text.replace('%v', val).replace('%d', def);
 	}
 
 	function clearHold()
@@ -341,17 +303,11 @@ class GameplayChangersSubstate extends MusicBeatSubstate
 		holdTime = 0;
 	}
 	
-	function changeSelection(change:Int = 0)
-	{
-		curSelected += change;
-		if (curSelected < 0)
-			curSelected = optionsArray.length - 1;
-		if (curSelected >= optionsArray.length)
-			curSelected = 0;
-
+	override function changeSelection(change:Int) {
+		if (change != 0) FlxG.sound.play(Paths.sound('scrollMenu'), 0.4);
 		var bullShit:Int = 0;
 
-		for (item in grpOptions.members) {
+		for (item in grpMenuItems.members) {
 			item.targetY = bullShit - curSelected;
 			bullShit++;
 
@@ -367,7 +323,6 @@ class GameplayChangersSubstate extends MusicBeatSubstate
 			}
 		}
 		curOption = optionsArray[curSelected]; //shorter lol
-		FlxG.sound.play(Paths.sound('scrollMenu'));
 	}
 
 	function reloadCheckboxes() {

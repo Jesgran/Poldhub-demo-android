@@ -2,14 +2,9 @@ package;
 
 import flixel.FlxG;
 import flixel.FlxSprite;
-import flixel.FlxSubState;
 import flixel.text.FlxText;
 import flixel.util.FlxColor;
-import flixel.effects.FlxFlicker;
-import lime.app.Application;
-import flixel.addons.transition.FlxTransitionableState;
 import flixel.tweens.FlxTween;
-import flixel.util.FlxTimer;
 
 class OutdatedState extends MusicBeatState
 {
@@ -39,7 +34,8 @@ class OutdatedState extends MusicBeatState
 	override function update(elapsed:Float)
 	{
 		if(!leftState) {
-			if (controls.ACCEPT) {
+			var enter:Bool = FlxG.keys.justPressed.ENTER || controls.ACCEPT || FlxG.mouse.justPressed;
+			if (enter) {
 				leftState = true;
 				CoolUtil.browserLoad("https://github.com/ShadowMario/FNF-PsychEngine/releases");
 			}
