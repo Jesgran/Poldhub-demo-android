@@ -1,208 +1,7 @@
 {
 	"song": {
 		"player1": null,
-		"events": [
-			[
-				1348.31460674157,
-				[
-					[
-						"Change Scroll Speed",
-						"0.9",
-						"0.5"
-					]
-				]
-			],
-			[
-				16179.7752808989,
-				[
-					[
-						"Change Scroll Speed",
-						"1",
-						"0.5"
-					]
-				]
-			],
-			[
-				25617.9775280899,
-				[
-					[
-						"Change Scroll Speed",
-						"0.9",
-						"0.15"
-					]
-				]
-			],
-			[
-				26966.2921348315,
-				[
-					[
-						"Change Scroll Speed",
-						"1.05",
-						"0.2"
-					]
-				]
-			],
-			[
-				49887.6404494382,
-				[
-					[
-						"Change Scroll Speed",
-						"0.9",
-						"0.08"
-					]
-				]
-			],
-			[
-				50224.7191011236,
-				[
-					[
-						"Change Scroll Speed",
-						"0.7",
-						"0.08"
-					]
-				]
-			],
-			[
-				50561.797752809,
-				[
-					[
-						"Change Scroll Speed",
-						"0.5",
-						"0.08"
-					]
-				]
-			],
-			[
-				52584.2696629213,
-				[
-					[
-						"Change Scroll Speed",
-						"1.09",
-						"0.08"
-					]
-				]
-			],
-			[
-				68089.8876404494,
-				[
-					[
-						"Change Scroll Speed",
-						"2",
-						"0.03"
-					]
-				]
-			],
-			[
-				68132.0224719101,
-				[
-					[
-						"Change Scroll Speed",
-						"1",
-						"0.03"
-					]
-				]
-			],
-			[
-				68174.1573033708,
-				[
-					[
-						"Change Scroll Speed",
-						"2",
-						"0.03"
-					]
-				]
-			],
-			[
-				68216.2921348315,
-				[
-					[
-						"Change Scroll Speed",
-						"0.3",
-						"0.03"
-					]
-				]
-			],
-			[
-				68258.4269662921,
-				[
-					[
-						"Change Scroll Speed",
-						"3.1",
-						"0.03"
-					]
-				]
-			],
-			[
-				68300.5617977528,
-				[
-					[
-						"Change Scroll Speed",
-						"0.9",
-						"0.03"
-					]
-				]
-			],
-			[
-				68342.6966292135,
-				[
-					[
-						"Change Scroll Speed",
-						"2",
-						"0.03"
-					]
-				]
-			],
-			[
-				68384.8314606742,
-				[
-					[
-						"Change Scroll Speed",
-						"1.04",
-						"0.03"
-					]
-				]
-			],
-			[
-				68426.9662921348,
-				[
-					[
-						"Change Scroll Speed",
-						"6.9",
-						"0.03"
-					]
-				]
-			],
-			[
-				68469.1011235955,
-				[
-					[
-						"Change Scroll Speed",
-						"1",
-						"0.03"
-					]
-				]
-			],
-			[
-				68511.2359550562,
-				[
-					[
-						"Change Scroll Speed",
-						"1.09",
-						"0.03"
-					]
-				]
-			],
-			[
-				95730.3370786518,
-				[
-					[
-						"Change Scroll Speed",
-						"1.0",
-						"0.5"
-					]
-				]
-			]
-		],
+		"events": [],
 		"gfVersion": "gf-pixel",
 		"player2": "xiuder",
 		"notes": [
@@ -1915,26 +1714,6 @@
 						48539.3258426966,
 						3,
 						758.426966292135
-					],
-					[
-						49382.0224719101,
-						1,
-						0
-					],
-					[
-						49634.8314606742,
-						6,
-						0
-					],
-					[
-						49424.1573033708,
-						2,
-						0
-					],
-					[
-						49466.2921348315,
-						3,
-						0
 					]
 				],
 				"lengthInSteps": 16,
@@ -1943,76 +1722,14 @@
 				"mustHitSection": true
 			},
 			{
-				"sectionNotes": [
-					[
-						49887.6404494382,
-						2,
-						0
-					],
-					[
-						50140.4494382022,
-						2,
-						0
-					],
-					[
-						50393.2584269663,
-						2,
-						0
-					],
-					[
-						50561.797752809,
-						2,
-						0
-					],
-					[
-						51067.4157303371,
-						1,
-						0
-					],
-					[
-						51067.4157303371,
-						2,
-						0
-					]
-				],
+				"sectionNotes": [],
 				"lengthInSteps": 16,
 				"typeOfSection": 0,
 				"bpm": 0,
 				"mustHitSection": false
 			},
 			{
-				"sectionNotes": [
-					[
-						51278.0898876404,
-						0,
-						0
-					],
-					[
-						51278.0898876404,
-						3,
-						0
-					],
-					[
-						51741.5730337079,
-						2,
-						0
-					],
-					[
-						51910.1123595506,
-						3,
-						0
-					],
-					[
-						52162.9213483146,
-						2,
-						0
-					],
-					[
-						51910.1123595506,
-						0,
-						0
-					]
-				],
+				"sectionNotes": [],
 				"lengthInSteps": 16,
 				"typeOfSection": 0,
 				"bpm": 0,
@@ -2765,16 +2482,6 @@
 					[
 						65280.8988764045,
 						2,
-						0
-					],
-					[
-						65393.2584269663,
-						1,
-						0
-					],
-					[
-						65393.2584269663,
-						1,
 						0
 					],
 					[
@@ -5408,68 +5115,7 @@
 			{
 				"lengthInSteps": 16,
 				"typeOfSection": 0,
-				"sectionNotes": [
-					[
-						107949.438202247,
-						1,
-						337.078651685393
-					],
-					[
-						107949.438202247,
-						2,
-						337.078651685393
-					],
-					[
-						108202.247191011,
-						3,
-						0
-					],
-					[
-						108202.247191011,
-						0,
-						0
-					],
-					[
-						108370.786516854,
-						3,
-						0
-					],
-					[
-						108370.786516854,
-						2,
-						0
-					],
-					[
-						108539.325842697,
-						2,
-						0
-					],
-					[
-						108539.325842697,
-						0,
-						252.808988764045
-					],
-					[
-						108606.741573034,
-						1,
-						0
-					],
-					[
-						108202.247191011,
-						1,
-						0
-					],
-					[
-						108606.741573034,
-						3,
-						168.539325842697
-					],
-					[
-						108741.573033708,
-						1,
-						84.2696629213483
-					]
-				],
+				"sectionNotes": [],
 				"altAnim": false,
 				"bpm": 0,
 				"changeBPM": false,
@@ -6919,6 +6565,56 @@
 				"bpm": 178
 			},
 			{
+				"typeOfSection": 0,
+				"sectionNotes": [],
+				"sectionBeats": 4,
+				"altAnim": false,
+				"gfSection": false,
+				"bpm": 178,
+				"changeBPM": false,
+				"mustHitSection": true
+			},
+			{
+				"typeOfSection": 0,
+				"sectionNotes": [],
+				"sectionBeats": 4,
+				"altAnim": false,
+				"gfSection": false,
+				"bpm": 178,
+				"changeBPM": false,
+				"mustHitSection": true
+			},
+			{
+				"sectionBeats": 4,
+				"sectionNotes": [],
+				"typeOfSection": 0,
+				"gfSection": false,
+				"altAnim": false,
+				"mustHitSection": true,
+				"changeBPM": false,
+				"bpm": 178
+			},
+			{
+				"sectionBeats": 4,
+				"sectionNotes": [],
+				"typeOfSection": 0,
+				"gfSection": false,
+				"altAnim": false,
+				"mustHitSection": true,
+				"changeBPM": false,
+				"bpm": 178
+			},
+			{
+				"sectionBeats": 4,
+				"sectionNotes": [],
+				"typeOfSection": 0,
+				"gfSection": false,
+				"altAnim": false,
+				"mustHitSection": true,
+				"changeBPM": false,
+				"bpm": 178
+			},
+			{
 				"gfSection": false,
 				"altAnim": false,
 				"typeOfSection": 0,
@@ -6940,11 +6636,11 @@
 			}
 		],
 		"song": "xiudered",
-		"needsVoices": true,
 		"arrowSkin": "",
+		"needsVoices": true,
 		"sections": 45,
-		"stage": "xiuderone",
 		"validScore": true,
+		"stage": "xiuderone",
 		"bpm": 178,
 		"speed": 3.6
 	}

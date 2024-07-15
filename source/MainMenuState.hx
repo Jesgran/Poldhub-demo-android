@@ -39,7 +39,7 @@ class MainMenuState extends MusicBeatState
 		'shop_locked',
 		#if ACHIEVEMENTS_ALLOWED 'awards', #end
 		'credits',
-		'donazioni',
+		#if !switch 'donazioni' #end,
 		'options',
 		#if !switch 'donate' #end
 	];
@@ -105,9 +105,7 @@ class MainMenuState extends MusicBeatState
 		for (i in 0...optionShit.length)
 		{
 			var offset:Float = 108 - (Math.max(optionShit.length, 4) - 4) * 80;
-			var menuItem:FlxSprite = new FlxSprite(0, (i * 160)  + offset);
-			menuItem.scale.x = optionShit[i] == 'shop_locked' ? 0.85 : 1;
-			menuItem.scale.y = optionShit[i] == 'shop_locked' ? 0.85 : 1;
+			var menuItem:FlxSprite = new FlxSprite(0, (i * 160) + offset);
 			menuItem.frames = Paths.getSparrowAtlas('mainmenu/menu_' + optionShit[i]);
 			menuItem.animation.addByPrefix('idle', optionShit[i] + " basic", 24);
 			menuItem.animation.addByPrefix('selected', optionShit[i] + " white", 24);
@@ -124,7 +122,7 @@ class MainMenuState extends MusicBeatState
 
 		FlxG.camera.follow(camFollowPos, null, 1);
 
-		var versionShit:FlxText = new FlxText(12, FlxG.height - 64, 0, "Poldhub DEMO", 12);
+		var versionShit:FlxText = new FlxText(12, FlxG.height - 64, 0, "Poldhub DEMO v1.1", 12);
 		versionShit.scrollFactor.set();
 		versionShit.setFormat("VCR OSD Mono", 16, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		add(versionShit);
